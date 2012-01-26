@@ -530,7 +530,7 @@ public class WorkspaceController {
     private void createAndShowGUI() {
         frame = new JFrame("WorkspaceDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setBounds(100, 100, 500, 500);
+        frame.setBounds(100, 100, 800, 600);
         final SearchBar sb = new SearchBar("Search blocks",
                 "Search for blocks in the drawers and workspace", workspace);
         for (final SearchableContainer con : getAllSearchableContainers()) {

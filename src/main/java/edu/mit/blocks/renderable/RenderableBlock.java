@@ -95,7 +95,7 @@ public class RenderableBlock extends JComponent implements SearchableElement, Mo
     /**  set true when comment is added or removed from this block */
     private boolean commentLabelChanged = false;
     /**
-     * An internal JComponent whose functionality is independant of any other
+     * An internal JComponent whose functionality is independent of any other
      * functionality. If the block widget is the largest component in the
      * block, then the renderableblock's Shape is determined form the dimensions
      * of this widget.  They should not be related to starlogo or codeblocks.  MAY BE NULL*/
@@ -186,15 +186,15 @@ public class RenderableBlock extends JComponent implements SearchableElement, Mo
         this.blockID = blockID;
         ALL_RENDERABLE_BLOCKS.put(this.blockID, this);
 
+        //set null layout so as to add blockLabels where ever we want
+        setLayout(null);
+        
         //initialize block image map
         //note: must do this before updateBuffImg();
         for (BlockImageIcon img : getBlock().getInitBlockImageMap().values()) {
-            imageMap.put(img.getImageLocation(), new BlockImageIcon(img.getImageIcon(),
-                    img.getImageLocation(), img.isEditable(), img.wrapText()));
+            imageMap.put(img.getImageLocation(), new BlockImageIcon(img.getImageIcon(), img.getImageLocation(), img.isEditable(), img.wrapText()));
             add(imageMap.get(img.getImageLocation()));
         }
-        //set null layout so as to add blockLabels where ever we want
-        setLayout(null);
 
         dragHandler = new JComponentDragHandler(this); // set up drag handler delegate
         addMouseListener(this);
@@ -642,7 +642,8 @@ public class RenderableBlock extends JComponent implements SearchableElement, Mo
         for (BlockImageIcon img : getBlock().getInitBlockImageMap().values()) {
             maxImgHt += img.getImageIcon().getIconHeight();
         }
-        return maxImgHt;
+        // FIXME need better calculation for the image height. 
+        return maxImgHt + 10;
     }
 
     /**
@@ -654,7 +655,8 @@ public class RenderableBlock extends JComponent implements SearchableElement, Mo
         for (BlockImageIcon img : getBlock().getInitBlockImageMap().values()) {
             maxImgWt += img.getImageIcon().getIconWidth();
         }
-        return maxImgWt;
+        // FIXME quick hack to avoid image blocking plug labels. Need to figure out the z-order of image drawing. 
+        return (maxImgWt > 0 ) ? (maxImgWt + 100) : maxImgWt;
     }
 
     //////////////////////////////////////////////
@@ -1217,6 +1219,7 @@ public class RenderableBlock extends JComponent implements SearchableElement, Mo
      * if the buffer has been cleared.
      */
     private void updateBuffImg() {
+    	// FIXME Need to fix the image drawing
         //if label text has changed, then resync labels/sockets and reform shape
         if (!synchronizeLabelsAndSockets()) {
             reformBlockShape();//if updateLabels is true, we don't need to reform AGAIN
@@ -1225,17 +1228,14 @@ public class RenderableBlock extends JComponent implements SearchableElement, Mo
         //create image
         //note: need to add twice the highlight stroke width so that the highlight does not get cut off
         GraphicsManager.recycleGCCompatibleImage(buffImg);
-        buffImg = GraphicsManager.getGCCompatibleImage(
-                blockArea.getBounds().width,
-                blockArea.getBounds().height);
+        buffImg = GraphicsManager.getGCCompatibleImage(blockArea.getBounds().width, blockArea.getBounds().height);
         Graphics2D buffImgG2 = (Graphics2D) buffImg.getGraphics();
 
         //update bounds of this renderableBlock as bounds of the shape
         Dimension updatedDimensionRect = new Dimension(blockArea.getBounds().getSize());
 
         //get size of block to determine size needed for bevel image
-        Image bevelImage = BlockShapeUtil.getBevelImage(
-                updatedDimensionRect.width, updatedDimensionRect.height, blockArea);
+        Image bevelImage = BlockShapeUtil.getBevelImage(updatedDimensionRect.width, updatedDimensionRect.height, blockArea);
 
         //need antialiasing to remove color fill artifacts outside the bevel
         buffImgG2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -1861,7 +1861,6 @@ public class RenderableBlock extends JComponent implements SearchableElement, Mo
      * State Saving Stuff for Undo/Redo *
      ***********************************/
     private class RenderableBlockState {
-
         public int x;
         public int y;
     }
