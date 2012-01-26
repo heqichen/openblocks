@@ -8,14 +8,14 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.mit.blocks.renderable.RenderableBlock;
-
-import edu.mit.blocks.workspace.Page;
-import edu.mit.blocks.workspace.WorkspaceEvent;
-import edu.mit.blocks.workspace.WorkspaceListener;
-import edu.mit.blocks.workspace.BlockCanvas.Canvas;
 import edu.mit.blocks.codeblocks.Block;
 import edu.mit.blocks.codeblocks.BlockConnector;
+import edu.mit.blocks.renderable.RenderableBlock;
+import edu.mit.blocks.workspace.BlockCanvas.Canvas;
+import edu.mit.blocks.workspace.Page;
+import edu.mit.blocks.workspace.Workspace;
+import edu.mit.blocks.workspace.WorkspaceEvent;
+import edu.mit.blocks.workspace.WorkspaceListener;
 
 /**
  * The FocusTraversalManager has two function.  First, it 
@@ -78,11 +78,13 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
     private Point canvasFocusPoint = new Point(0, 0);
     /** this.focusblock: the Block ID that currently has focus */
     private Long focusBlock = Block.NULL;
+    private final Workspace workspace;
 
     /////////////////
     // Constructor //
     /////////////////
-    public FocusTraversalManager() {
+    public FocusTraversalManager(Workspace workspace) {
+        this.workspace = workspace;
     }
 
     ///////////////
@@ -213,7 +215,7 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
     }
 
     public void setFocus(Long blockID) {
-        if (blockID == null || blockID == Block.NULL || blockID == -1 || Block.getBlock(blockID) == null) {
+        if (blockID == null || blockID == Block.NULL || blockID == -1 || workspace.getEnv().getBlock(blockID) == null) {
             throw new RuntimeException("Invariant Violated:"
                     + "may not set focus to a null Block instance");
             //Please do not remove exception above.  This class
@@ -224,12 +226,12 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
         //remove focus from old block if one existed
         if (!invalidBlock(this.focusBlock)) {
             getBlock(this.focusBlock).setFocus(false);
-            RenderableBlock.getRenderableBlock(this.focusBlock).repaintBlock();
+            workspace.getEnv().getRenderableBlock(this.focusBlock).repaintBlock();
         }
         //set focus block to blockID
         getBlock(blockID).setFocus(true);
-        RenderableBlock.getRenderableBlock(blockID).requestFocus();
-        RenderableBlock.getRenderableBlock(blockID).repaintBlock();
+        workspace.getEnv().getRenderableBlock(blockID).requestFocus();
+        workspace.getEnv().getRenderableBlock(blockID).repaintBlock();
         //set canvas focus point to be null; canvas no longer has focus
         this.canvasFocusPoint = null;
         //set blockfocus point to new value
@@ -248,11 +250,11 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
      * TODO: finish method documentation
      */
     public void setFocus(Point canvasPoint, Long blockID) {
-        if (blockID == null || blockID == Block.NULL || blockID == -1 || Block.getBlock(blockID) == null) {
+        if (blockID == null || blockID == Block.NULL || blockID == -1 || workspace.getEnv().getBlock(blockID) == null) {
             //remove focus form old block if one existed
             if (!invalidBlock(this.focusBlock)) {
                 getBlock(this.focusBlock).setFocus(false);
-                RenderableBlock.getRenderableBlock(this.focusBlock).repaintBlock();
+                workspace.getEnv().getRenderableBlock(this.focusBlock).repaintBlock();
             }
             //set block ID to null
             this.focusBlock = Block.NULL;
@@ -303,7 +305,7 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
      */
     public boolean focusNextBlock() {
         //return focus to canvas if no focusblock does not exist
-        if (invalidBlock(focusBlock) || !RenderableBlock.getRenderableBlock(focusBlock).isVisible()) {
+        if (invalidBlock(focusBlock) || !workspace.getEnv().getRenderableBlock(focusBlock).isVisible()) {
             setFocus(canvasFocusPoint, Block.NULL);
             return false;
         }
@@ -350,7 +352,7 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
      */
     public boolean focusPrevBlock() {
         //return focus to canvas if no focusblock does not exist
-        if (invalidBlock(focusBlock) || !RenderableBlock.getRenderableBlock(focusBlock).isVisible()) {
+        if (invalidBlock(focusBlock) || !workspace.getEnv().getRenderableBlock(focusBlock).isVisible()) {
             setFocus(canvasFocusPoint, Block.NULL);
             return false;
         }
@@ -423,7 +425,7 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
      * @expects no wrapping to TopOfStack block, do not use this method for infix blocks
      */
     public boolean focusAfterBlock() {
-        if (invalidBlock(focusBlock) || !RenderableBlock.getRenderableBlock(focusBlock).isVisible()) {
+        if (invalidBlock(focusBlock) || !workspace.getEnv().getRenderableBlock(focusBlock).isVisible()) {
             //return focus to canvas if no focusblock does not exist
             setFocus(canvasFocusPoint, Block.NULL);
             return false;
@@ -462,7 +464,7 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
      * @expects no wrapping to bottom block, do not use this method for infix blocks
      */
     public boolean focusBeforeBlock() {
-        if (invalidBlock(focusBlock) || !RenderableBlock.getRenderableBlock(focusBlock).isVisible()) {
+        if (invalidBlock(focusBlock) || !workspace.getEnv().getRenderableBlock(focusBlock).isVisible()) {
             //return focus to canvas if no focusblock does not exist
             setFocus(canvasFocusPoint, Block.NULL);
             return false;
@@ -541,7 +543,7 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
      */
     Long getTopOfStack(Long blockID) {
         //check invariant
-        if (blockID == null || blockID == Block.NULL || Block.getBlock(blockID) == null) {
+        if (blockID == null || blockID == Block.NULL || workspace.getEnv().getBlock(blockID) == null) {
             throw new RuntimeException("Invariant Violated: may not"
                     + "iterate for outermost block over a null instance of Block");
         }
@@ -656,7 +658,7 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
      * 			connection or null if non exists
      */
     private Block getBlock(Long blockID) {
-        return Block.getBlock(blockID);
+        return workspace.getEnv().getBlock(blockID);
     }
 
     private Block getBeforeBlock(Long blockID) {
@@ -728,8 +730,8 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
     ///////////////////////////////
     // Key Listeners Method      //
     ///////////////////////////////
-    public void keyPressed(KeyEvent e) {
-        KeyInputMap.processKeyChar(e);
+	public void keyPressed(KeyEvent e) {
+        KeyInputMap.processKeyChar(workspace, e);
     }
 
     public void keyReleased(KeyEvent e) {
@@ -759,7 +761,7 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
                 if (!(event.getSourceWidget() instanceof Page)) {
                     break;
                 }
-                RenderableBlock rb = RenderableBlock.getRenderableBlock(event.getSourceBlockID());
+                RenderableBlock rb = workspace.getEnv().getRenderableBlock(event.getSourceBlockID());
                 if (rb == null) {
                     break;
                 }
@@ -780,7 +782,7 @@ public class FocusTraversalManager implements MouseListener, KeyListener, Worksp
         }
     }
 
-    public String toString() {
-        return "FocusManager: " + blockFocusPoint + " of " + Block.getBlock(focusBlock);
+	public String toString() {
+        return "FocusManager: " + blockFocusPoint + " of " + workspace.getEnv().getBlock(focusBlock);
     }
 }

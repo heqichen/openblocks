@@ -2,6 +2,7 @@ package edu.mit.blocks.workspace;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.PopupMenu;
 import java.awt.event.MouseEvent;
@@ -21,6 +22,7 @@ import javax.swing.SwingUtilities;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import edu.mit.blocks.codeblockutil.CGraphite;
 import edu.mit.blocks.codeblockutil.CHoverScrollPane;
@@ -55,6 +57,10 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
     private JComponent canvas;
     /** The scrollable JComponent representing the graphical part of this BlockCanvas */
     private CScrollPane scrollPane;
+    /** The workspace in use */
+    private final Workspace workspace;
+    
+    private boolean collapsible = false;
 
     //////////////////////////////
     //Constructor/Destructor	//
@@ -63,7 +69,8 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
      * Constructs BlockCanvas and subscribes
      * this BlockCanvas to PageChange events
      */
-    public BlockCanvas() {
+    public BlockCanvas(Workspace workspace) {
+        this.workspace = workspace;
         this.canvas = new Canvas();
         this.scrollPane = new CHoverScrollPane(canvas,
                 ScrollPolicy.VERTICAL_BAR_ALWAYS,
@@ -294,7 +301,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
         }
         pages.add(position, page);
         canvas.add(page.getJComponent(), 0);
-        PageDivider pd = new PageDivider(page);
+        PageDivider pd = new PageDivider(workspace, page);
         dividers.add(pd);
         canvas.add(pd, 0);
         PageChangeEventManager.notifyListeners();
@@ -441,7 +448,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
     		if (Workspace.everyPageHasDrawer) {
     			pageElement.setAttribute("drawer-with-page", "yes");
     		}
-    		
+    		pageElement.setAttribute("collapsible-pages", collapsible?"yes":"no");
     		for (Page page: pages) {
     			Node pageNode = page.getSaveNode(document);
     			pageElement.appendChild(pageNode);
@@ -467,13 +474,26 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
 
         //load pages, page drawers, and their blocks from save file
         //PageDrawerManager.loadPagesAndDrawers(root);
-        PageDrawerLoadingUtils.loadPagesAndDrawers(root, Workspace.getInstance().getFactoryManager());
-        int screenWidth = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
-        int canvasWidth = canvas.getPreferredSize().width;
-        if (canvasWidth < screenWidth) {
-            Page p = pages.get(pages.size() - 1);
-            p.addPixelWidth(screenWidth - canvasWidth);
-            PageChangeEventManager.notifyListeners();
+        PageDrawerLoadingUtils.loadPagesAndDrawers(workspace, root, workspace.getFactoryManager());
+        
+        NodeList pagesRoot = root.getElementsByTagName("Pages");
+        if(pagesRoot != null && pagesRoot.getLength()>0) {
+            Node pagesNode = pagesRoot.item(0);
+            if(pagesNode != null) {
+                collapsible = PageDrawerLoadingUtils.getBooleanValue(pagesNode, "collapsible-pages");
+            }
+        }
+        
+        // FIXME: this UI code should not be here, fails unit tests that run in headless mode
+        // As a workaround, only execute if we have a UI
+        if (!GraphicsEnvironment.isHeadless()) {
+        	int screenWidth = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
+        	int canvasWidth = canvas.getPreferredSize().width;
+        	if (canvasWidth < screenWidth) {
+        		Page p = pages.get(pages.size() - 1);
+        		p.addPixelWidth(screenWidth - canvasWidth);
+        		PageChangeEventManager.notifyListeners();
+        	}
         }
     }
 
@@ -525,7 +545,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
 
             //Finally, add all the remaining pages that weren't there before
             for (String newPageName : unloadedPages) {
-                Page newPage = new Page(newPageName);
+                Page newPage = new Page(workspace, newPageName);
                 newPage.loadState(pageStates.get(newPageName));
                 pages.add(newPage);
             }

@@ -4,13 +4,13 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import edu.mit.blocks.codeblocks.Block;
+import edu.mit.blocks.codeblocks.BlockLink;
 import edu.mit.blocks.renderable.RenderableBlock;
 import edu.mit.blocks.workspace.Page;
 import edu.mit.blocks.workspace.PageChangeEventManager;
 import edu.mit.blocks.workspace.Workspace;
 import edu.mit.blocks.workspace.WorkspaceEvent;
-import edu.mit.blocks.codeblocks.Block;
-import edu.mit.blocks.codeblocks.BlockLink;
 
 /**
  * The BlockDropAnimator has two function, to fly a block to
@@ -20,6 +20,8 @@ import edu.mit.blocks.codeblocks.BlockLink;
  * smooth animation of flight.
  */
 public class BlockDropAnimator implements ActionListener {
+    
+    private final Workspace workspace;
 
     private final RenderableBlock childBlock;
     private final RenderableBlock parentBlock;
@@ -31,7 +33,8 @@ public class BlockDropAnimator implements ActionListener {
      * Constructs a TypeBlockTimer.
      * @requires focusPoint != null && childBlock != null && parentBlock != null
      */
-    public BlockDropAnimator(Point focusPoint, RenderableBlock childBlock, RenderableBlock parentBlock) {
+    public BlockDropAnimator(Workspace workspace, Point focusPoint, RenderableBlock childBlock, RenderableBlock parentBlock) {
+        this.workspace = workspace;
         this.childBlock = childBlock;
         this.parentBlock = parentBlock;
         this.focusPoint = focusPoint;
@@ -48,7 +51,7 @@ public class BlockDropAnimator implements ActionListener {
             //if parent block exist, then preform automatic linking
             childBlock.setLocation(focusPoint);
             if (parentBlock != null && parentBlock.getBlockID() != null && !parentBlock.getBlockID().equals(Block.NULL)) {
-                BlockLink link = LinkFinderUtil.connectBlocks(Block.getBlock(childBlock.getBlockID()), Block.getBlock(parentBlock.getBlockID()));
+                BlockLink link = LinkFinderUtil.connectBlocks(workspace, workspace.getEnv().getBlock(childBlock.getBlockID()), workspace.getEnv().getBlock(parentBlock.getBlockID()));
                 if (link == null) {
                     dropBlock(childBlock);
                     childBlock.repaintBlock();
@@ -58,12 +61,13 @@ public class BlockDropAnimator implements ActionListener {
                     link.connect();
                     dropBlock(childBlock);
 
-                    Workspace.getInstance().notifyListeners(new WorkspaceEvent(
-                            RenderableBlock.getRenderableBlock(link.getPlugBlockID()).getParentWidget(),
+                    workspace.notifyListeners(new WorkspaceEvent(
+                            workspace,
+                            workspace.getEnv().getRenderableBlock(link.getPlugBlockID()).getParentWidget(),
                             link, WorkspaceEvent.BLOCKS_CONNECTED));
-                    RenderableBlock.getRenderableBlock(link.getSocketBlockID()).moveConnectedBlocks();
-                    RenderableBlock.getRenderableBlock(link.getSocketBlockID()).repaintBlock();
-                    RenderableBlock.getRenderableBlock(link.getSocketBlockID()).repaint();
+                    workspace.getEnv().getRenderableBlock(link.getSocketBlockID()).moveConnectedBlocks();
+                    workspace.getEnv().getRenderableBlock(link.getSocketBlockID()).repaintBlock();
+                    workspace.getEnv().getRenderableBlock(link.getSocketBlockID()).repaint();
                 }
             } else {
                 dropBlock(childBlock);
@@ -73,7 +77,7 @@ public class BlockDropAnimator implements ActionListener {
 
             //stop the timer
             timer.stop();
-            if (Block.getBlock(childBlock.getBlockID()).getGenusName().equals("number")) {
+            if (workspace.getEnv().getBlock(childBlock.getBlockID()).getGenusName().equals("number")) {
                 childBlock.switchToLabelEditingMode(false);
             } else {
                 childBlock.switchToLabelEditingMode(true);
@@ -104,7 +108,8 @@ public class BlockDropAnimator implements ActionListener {
         if (block == null) {
             throw new RuntimeException("Invariant Violated: child block was null");
         }
-        Page p = Workspace.getInstance().getCurrentPage(block);
+        Workspace workspace = block.getWorkspace();
+        Page p = workspace.getCurrentPage(block);
         if (p == null) {
             throw new RuntimeException("Invariant Violated: child block was located on a null widget");
         }

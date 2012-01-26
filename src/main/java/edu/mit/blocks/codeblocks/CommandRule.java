@@ -1,11 +1,15 @@
 package edu.mit.blocks.codeblocks;
 
+import edu.mit.blocks.workspace.Workspace;
 import edu.mit.blocks.workspace.WorkspaceEvent;
 import edu.mit.blocks.workspace.WorkspaceListener;
 
 public class CommandRule implements LinkRule, WorkspaceListener {
+    
+    private final Workspace workspace;
 
-    public CommandRule() {
+    public CommandRule(Workspace workspace) {
+        this.workspace = workspace;
     }
 
     public boolean canLink(Block block1, Block block2, BlockConnector socket1, BlockConnector socket2) {
@@ -31,11 +35,11 @@ public class CommandRule implements LinkRule, WorkspaceListener {
             BlockLink link = e.getSourceLink();
             if (link.getLastBlockID() != null && link.getLastBlockID() != Block.NULL
                     && BlockConnectorShape.isCommandConnector(link.getPlug()) && BlockConnectorShape.isCommandConnector(link.getSocket())) {
-                Block top = Block.getBlock(link.getPlugBlockID());
+                Block top = workspace.getEnv().getBlock(link.getPlugBlockID());
                 while (top.hasAfterConnector() && top.getAfterConnector().hasBlock()) {
-                    top = Block.getBlock(top.getAfterBlockID());
+                    top = workspace.getEnv().getBlock(top.getAfterBlockID());
                 }
-                Block bottom = Block.getBlock(link.getLastBlockID());
+                Block bottom = workspace.getEnv().getBlock(link.getLastBlockID());
 
                 // For safety: if either the top stack is terminated, or
                 // the bottom stack is not a starter, don't try to force a link
@@ -43,7 +47,7 @@ public class CommandRule implements LinkRule, WorkspaceListener {
                     return;
                 }
 
-                link = BlockLink.getBlockLink(top, bottom, top.getAfterConnector(), bottom.getBeforeConnector());
+                link = BlockLink.getBlockLink(workspace, top, bottom, top.getAfterConnector(), bottom.getBeforeConnector());
                 link.connect();
             }
         }

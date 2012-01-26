@@ -18,8 +18,9 @@ import org.w3c.dom.NodeList;
 import edu.mit.blocks.codeblocks.BlockConnector.PositionType;
 import edu.mit.blocks.renderable.BlockImageIcon;
 import edu.mit.blocks.renderable.BlockImageIcon.ImageLocation;
-import edu.mit.blocks.renderable.RenderableBlock;
 import edu.mit.blocks.workspace.ISupportMemento;
+import edu.mit.blocks.workspace.Workspace;
+import edu.mit.blocks.workspace.WorkspaceEnvironment;
 
 /**
  * Block holds the mutable prop (data) of a particular block.  These mutable 
@@ -30,15 +31,9 @@ import edu.mit.blocks.workspace.ISupportMemento;
  */
 public class Block implements ISupportMemento {
 
-    /** The ID that is to be assigned to the next new block */
-    private static long NEXT_ID = 1;
-
     //Defines a NULL id for a Block
     public static final Long NULL = Long.valueOf(-1);
-    
-    /** A universal hashmap of all the Block instances*/
-    private final static HashMap<Long, Block> ALL_BLOCKS = new HashMap<Long, Block>();
-    
+
     //block identifying information
     private final Long blockID;
     private String label;
@@ -75,35 +70,41 @@ public class Block implements ISupportMemento {
     
     //argument descriptions
     private ArrayList<String> argumentDescriptions;
+
+    protected final Workspace workspace;
+    
+    // shortcut field (workspace.getEnv() call provides the same)
+    private final WorkspaceEnvironment env;
     
     /**
      * Constructs a new Block from the specified information.  This class constructor is 
      * protected as block loading from XML content or the (careful!) creation of its subclasses 
      * should override BlockID assignment.
+     * @param workspace The workspace in which this block should be created
      * @param id the Block ID of this
      * @param genusName the String name of this block's BlockGenus 
      * @param label the String label of this Block
      */
-    protected Block(Long id, String genusName, String label, boolean linkToStubs) {
+    protected Block(Workspace workspace, Long id, String genusName, String label, boolean linkToStubs) {
 
-        if (ALL_BLOCKS.containsKey(id)) {
-            Block dup = ALL_BLOCKS.get(id);
-            System.out.println("pre-existing block is: " + dup + " with genus " + dup.getGenusName() + " and label " + dup.getBlockLabel());
-            assert !ALL_BLOCKS.containsKey(id) : "Block id: " + id + " already exists!  BlockGenus " + genusName + " label: " + label;
-        }
-        this.blockID = id;
+        this.workspace = workspace;
+        this.env = workspace.getEnv();
+        // these fields have to be set before the call to addBlock()
+		this.blockID = id;
+        this.genusName = genusName;
+        this.label = label;
 
-        //if this assigned id value equals the next id to automatically assign 
-        // a new block, increment the next id value by 1
-        if (id.longValue() == NEXT_ID) {
-            NEXT_ID++;
-        }
+        //add to ALL_BLOCKS
+        //warning: publishing this block before constructor finishes has the
+        //potential to cause some problems such as data races
+        //other threads could access this block from getBlock()
+        workspace.getEnv().addBlock(this);
 
         sockets = new ArrayList<BlockConnector>();
         argumentDescriptions = new ArrayList<String>();
         //copy connectors from BlockGenus
 
-        final BlockGenus genus = BlockGenus.getGenusWithName(genusName);
+        final BlockGenus genus = env.getGenusWithName(genusName);
         if (genus == null) {
             throw new RuntimeException("genusName: " + genusName + " does not exist.");
         }
@@ -125,9 +126,7 @@ public class Block implements ISupportMemento {
             after = new BlockConnector(genus.getInitAfter());
         }
 
-        this.genusName = genusName;
 
-        this.label = label;
 
         for (final String arg : genus.getInitialArgumentDescriptions()) {
             argumentDescriptions.add(arg.trim());
@@ -135,16 +134,11 @@ public class Block implements ISupportMemento {
 
         this.expandGroups = new ArrayList<List<BlockConnector>>(genus.getExpandGroups());
 
-        //add to ALL_BLOCKS
-        //warning: publishing this block before constructor finishes has the
-        //potential to cause some problems such as data races
-        //other threads could access this block from getBlock()
-        ALL_BLOCKS.put(this.blockID, this);
 
         //add itself to stubs hashmap
         //however factory blocks will have entries in hashmap...
         if (linkToStubs && this.hasStubs()) {
-            BlockStub.putNewParentInStubMap(this.blockID);
+            BlockStub.putNewParentInStubMap(workspace, this.blockID);
         }
     }
     
@@ -152,84 +146,66 @@ public class Block implements ISupportMemento {
      * Constructs a new <code>Block</code> instance.  Using the genusName specified 
      * of this Block's corresponding BlockGenus, this constructor populates this Block
      * with its genus information.  
+     * @param workspace The workspace in which this block should be created
      * @param genusName the name of its associated <code>BlockGenus</code> 
      * @param label the label of this Block.  
      * @param linkToStubs if true, this block can have stubs and be linked to them;
      * if false, then this block even though the genus specifies it will not be 
      * linked to stubs
      */
-    public Block(String genusName, String label, boolean linkToStubs) {
+    public Block(Workspace workspace, String genusName, String label, boolean linkToStubs) {
         //more will go into constructor;
-        this(NEXT_ID, genusName, label, linkToStubs);
-
-        NEXT_ID++;
-
-        while (ALL_BLOCKS.containsKey(NEXT_ID)) {
-            NEXT_ID++;
-        }
+        this(workspace, workspace.getEnv().getNextBlockID(), genusName, label, linkToStubs);
     }
-    
+
     /**
      * Constructs a new <code>Block</code> instance.  Using the genusName specified 
      * of this Block's corresponding BlockGenus, this constructor populates this Block
      * with its genus information.  
+     * @param workspace The workspace in which this block should be created
      * @param genusName the name of its associated <code>BlockGenus</code> 
      * @param label the label of this Block.  
      */
-    public Block(String genusName, String label) {
+    public Block(Workspace workspace, String genusName, String label) {
         //more will go into constructor;
-        this(NEXT_ID, genusName, label, true);
-
-        NEXT_ID++;
-
-        while (ALL_BLOCKS.containsKey(NEXT_ID)) {
-            NEXT_ID++;
-        }
+        this(workspace, workspace.getEnv().getNextBlockID(), genusName, label, true);
     }
-    
+
     /**
      * Constructs a new <code>Block</code> instance.  Using the genusName specified 
      * of this Block's corresponding BlockGenus, this constructor populates this Block
      * with its genus information.  
+     * @param workspace The workspace in which this block should be created
      * @param genusName the name of its associated <code>BlockGenus</code> 
      */
-    public Block(String genusName) {
-        this(genusName, BlockGenus.getGenusWithName(genusName).getInitialLabel());
+    public Block(Workspace workspace, String genusName) {
+        this(workspace, genusName, workspace.getEnv().getGenusWithName(genusName).getInitialLabel());
     }
     
     /**
      * Constructs a new <code>Block</code> instance.  Using the genusName specified 
      * of this Block's corresponding BlockGenus, this constructor populates this Block
      * with its genus information.  
+     * @param workspace The workspace in which this block should be created
      * @param genusName the name of its associated <code>BlockGenus</code> 
      * @param linkToStubs if true, this block can have stubs and be linked to them;
      * if false, then this block even though the genus specifies it will not be 
      * linked to stubs
      */
-    public Block(String genusName, boolean linkToStubs) {
-        this(genusName, BlockGenus.getGenusWithName(genusName).getInitialLabel(), linkToStubs);
+    public Block(Workspace workspace, String genusName, boolean linkToStubs) {
+        this(workspace, genusName, workspace.getEnv().getGenusWithName(genusName).getInitialLabel(), linkToStubs);
     }
-    
-    /**
-     * Returns the Block instance with the specified blockID
-     * @param blockID
-     * @return the Block instance with the specified blockID
-     */
-    public static Block getBlock(Long blockID) {
-        return ALL_BLOCKS.get(blockID);
-    }
-    
-    /**
-     * Clears all block instances and resets id assigment.
-     */
-    public static void reset() {
-        ALL_BLOCKS.clear();
-        NEXT_ID = 1;
-    }
-    
+
     ///////////////////
     //BLOCK prop
     ///////////////////
+    /**
+     * Returns the workspace that this block is living in
+     */
+    public Workspace getWorkspace() {
+        return workspace;
+    }
+    
     /**
      * Returns the block ID of this
      * @return the block ID of this
@@ -285,7 +261,7 @@ public class Block implements ISupportMemento {
      */
     public void setBlockLabel(String newLabel) {
         if (this.linkToStubs && this.hasStubs()) {
-            BlockStub.parentNameChanged(this.label, newLabel, this.blockID);
+            BlockStub.parentNameChanged(workspace, this.label, newLabel, this.blockID);
         }
         label = newLabel;
     }
@@ -297,7 +273,7 @@ public class Block implements ISupportMemento {
     public void setPageLabel(String newPageLabel) {
         //update stubs
         if (this.linkToStubs && this.hasStubs()) {
-            BlockStub.parentPageLabelChanged(newPageLabel, this.blockID);
+            BlockStub.parentPageLabelChanged(workspace, newPageLabel, this.blockID);
         }
         pageLabel = newPageLabel;
     }
@@ -307,7 +283,7 @@ public class Block implements ISupportMemento {
      * @return the BlockGenus of this
      */
     private BlockGenus getGenus() {
-        return BlockGenus.getGenusWithName(genusName);
+        return env.getGenusWithName(genusName);
     }
     
     /**
@@ -317,7 +293,7 @@ public class Block implements ISupportMemento {
      */
     public void changeGenusTo(String genusName) {
         this.genusName = genusName;
-        label = BlockGenus.getGenusWithName(genusName).getInitialLabel();
+        label = env.getGenusWithName(genusName).getInitialLabel();
     }
     
     ////////////////////////////////
@@ -515,7 +491,7 @@ public class Block implements ISupportMemento {
         //NOTE: must update the sockets of this before updating its stubs as stubs use this as a reference to update its own sockets
         //if block has stubs, update its stubs as well
         if (hasStubs()) {
-            BlockStub.parentConnectorsChanged(blockID);
+            BlockStub.parentConnectorsChanged(workspace, getBlockID());
         }
     }
     
@@ -535,7 +511,7 @@ public class Block implements ISupportMemento {
         //NOTE: must update the sockets of this before updating its stubs as stubs use this as a reference to update its own sockets
         //if block has stubs, update its stubs as well
         if (hasStubs()) {
-            BlockStub.parentConnectorsChanged(blockID);
+            BlockStub.parentConnectorsChanged(workspace, blockID);
         }
     }
  
@@ -575,7 +551,7 @@ public class Block implements ISupportMemento {
      * @return true if socket successfully replaced
      */
     public boolean setSocketAt(int index, String kind, PositionType pos, String label, boolean isLabelEditable, boolean isExpandable, Long blockID) {
-        return sockets.set(index, new BlockConnector(kind, pos, label, isLabelEditable, isExpandable, blockID)) != null;
+        return sockets.set(index, new BlockConnector(workspace, kind, pos, label, isLabelEditable, isExpandable, blockID)) != null;
     }
     
     /**
@@ -605,7 +581,7 @@ public class Block implements ISupportMemento {
      * @param blockID the block id of the block attached to new socket
      */
     public void addSocket(String kind, PositionType positionType, String label, boolean isLabelEditable, boolean isExpandable, Long blockID) {
-        BlockConnector newSocket = new BlockConnector(kind, positionType, label, isLabelEditable, isExpandable, blockID);
+        BlockConnector newSocket = new BlockConnector(workspace, kind, positionType, label, isLabelEditable, isExpandable, blockID);
         sockets.add(newSocket);
     }
     
@@ -622,7 +598,7 @@ public class Block implements ISupportMemento {
      * @param blockID the block id of the block attached to new socket
      */
     public BlockConnector addSocket(int index, String kind, PositionType positionType, String label, boolean isLabelEditable, boolean isExpandable, Long blockID) {
-        BlockConnector newSocket = new BlockConnector(kind, positionType, label, isLabelEditable, isExpandable, blockID);
+        BlockConnector newSocket = new BlockConnector(workspace, kind, positionType, label, isLabelEditable, isExpandable, blockID);
         sockets.add(index, newSocket);
         return newSocket;
     }
@@ -642,10 +618,10 @@ public class Block implements ISupportMemento {
     public void removeSocket(BlockConnector socket) {
         //disconnect any blocks connected to socket
         if (socket.getBlockID() != Block.NULL) {
-            Block connectedBlock = Block.getBlock(socket.getBlockID());
+            Block connectedBlock = workspace.getEnv().getBlock(socket.getBlockID());
             connectedBlock.getConnectorTo(this.blockID).setConnectorBlockID(Block.NULL);
             socket.setConnectorBlockID(Block.NULL);
-            RenderableBlock.getRenderableBlock(blockID).blockDisconnected(socket);
+            workspace.getEnv().getRenderableBlock(blockID).blockDisconnected(socket);
         }
         sockets.remove(socket);
     }
@@ -676,7 +652,7 @@ public class Block implements ISupportMemento {
      * @param blockID the block id of the block attached to plug
      */
     public void setPlug(String kind, PositionType positionType, String label, boolean isLabelEditable, Long blockID) {
-        plug = new BlockConnector(kind, positionType, label, isLabelEditable, false, blockID);
+        plug = new BlockConnector(workspace, kind, positionType, label, isLabelEditable, false, blockID);
     }
     
     /**
@@ -854,7 +830,10 @@ public class Block implements ISupportMemento {
                 defargIDs.add(id);
                 //if id not null, then connect def arg's plug to this block
                 if (id != Block.NULL) {
-                    Block.getBlock(id).getPlug().setConnectorBlockID(this.blockID);
+                	workspace.getEnv()
+                	.getBlock(id)
+                	.getPlug()
+                	.setConnectorBlockID(this.blockID);
                 }
             }
             return defargIDs;
@@ -874,7 +853,7 @@ public class Block implements ISupportMemento {
         if (this.linkToStubs && this.hasStubs()) {
             ArrayList<BlockStub> newStubBlocks = new ArrayList<BlockStub>();
             for (String stubGenus : getStubList()) {
-                newStubBlocks.add(new BlockStub(this.getBlockID(), this.getGenusName(), this.getBlockLabel(), stubGenus));
+                newStubBlocks.add(new BlockStub(workspace, this.getBlockID(), this.getGenusName(), this.getBlockLabel(), stubGenus));
             }
             return newStubBlocks;
         }
@@ -893,7 +872,7 @@ public class Block implements ISupportMemento {
      * view of an event/change to the block data from the ui side
      */
     public void notifyRenderable() {
-        RenderableBlock.getRenderableBlock(blockID).repaintBlock();
+    	workspace.getEnv().getRenderableBlock(blockID).repaintBlock();
     }
     
     ////////////////////////////////////////
@@ -1378,10 +1357,11 @@ public class Block implements ISupportMemento {
     /**
      * Loads Block information from the specified node and return a Block 
      * instance with the loaded information
+     * @param workspace The workspace in use
      * @param node Node cantaining desired information
      * @return Block instance containing loaded information
      */
-    public static Block loadBlockFrom(Node node, HashMap<Long, Long> idMapping){
+    public static Block loadBlockFrom(Workspace workspace, Node node, HashMap<Long, Long> idMapping){
         Block block = null;
         Long id = null;
         String genusName = null;
@@ -1423,7 +1403,7 @@ public class Block implements ISupportMemento {
             //load attributes
             nameMatcher = attrExtractor.matcher(node.getAttributes().getNamedItem("id").toString());
             if (nameMatcher.find()) {
-                id = translateLong(Long.parseLong(nameMatcher.group(1)), idMapping);
+                id = translateLong(workspace, Long.parseLong(nameMatcher.group(1)), idMapping);
             }
             nameMatcher = attrExtractor.matcher(node.getAttributes().getNamedItem("genus-name").toString());
             if (nameMatcher.find()) {
@@ -1451,16 +1431,16 @@ public class Block implements ISupportMemento {
                 } else if (child.getNodeName().equals("CompilerErrorMsg")) {
                     badMsg = child.getTextContent();
                 } else if (child.getNodeName().equals("BeforeBlockId")) {
-                    beforeID = translateLong(Long.parseLong(child.getTextContent()), idMapping);
+                    beforeID = translateLong(workspace, Long.parseLong(child.getTextContent()), idMapping);
                 } else if (child.getNodeName().equals("AfterBlockId")) {
-                    afterID = translateLong(Long.parseLong(child.getTextContent()), idMapping);
+                    afterID = translateLong(workspace, Long.parseLong(child.getTextContent()), idMapping);
                 } else if (child.getNodeName().equals("Plug")) {
                     NodeList plugs = child.getChildNodes(); //there should only one child
                     Node plugNode;
                     for (int j = 0; j < plugs.getLength(); j++) {
                         plugNode = plugs.item(j);
                         if (plugNode.getNodeName().equals("BlockConnector")) {
-                            plug = BlockConnector.loadBlockConnector(plugNode, idMapping);
+                            plug = BlockConnector.loadBlockConnector(workspace, plugNode, idMapping);
                         }
                     }
                 } else if (child.getNodeName().equals("Sockets")) {
@@ -1469,7 +1449,7 @@ public class Block implements ISupportMemento {
                     for (int k = 0; k < socketNodes.getLength(); k++) {
                         socketNode = socketNodes.item(k);
                         if (socketNode.getNodeName().equals("BlockConnector")) {
-                            sockets.add(BlockConnector.loadBlockConnector(socketNode, idMapping));
+                            sockets.add(BlockConnector.loadBlockConnector(workspace, socketNode, idMapping));
                         }
                     }
                 } else if (child.getNodeName().equals("LangSpecProperties")) {
@@ -1512,13 +1492,13 @@ public class Block implements ISupportMemento {
             //create block or block stub instance
             if (!isStubBlock) {
                 if (label == null) {
-                    block = new Block(id, genusName, BlockGenus.getGenusWithName(genusName).getInitialLabel(), true);
+                    block = new Block(workspace, id, genusName, workspace.getEnv().getGenusWithName(genusName).getInitialLabel(), true);
                 } else {
-                    block = new Block(id, genusName, label, true);
+                    block = new Block(workspace, id, genusName, label, true);
                 }
             } else {
                 assert label != null : "Loading a block stub, but has a null label!";
-                block = new BlockStub(id, genusName, label, stubParentName, stubParentGenus);
+                block = new BlockStub(workspace, id, genusName, label, stubParentName, stubParentGenus);
             }
             
             if (plug != null) {
@@ -1558,25 +1538,19 @@ public class Block implements ISupportMemento {
         
         return null;
     }
-    
-    public static Long translateLong(Long input, HashMap<Long, Long> mapping) {
+
+    public static Long translateLong(Workspace workspace, Long input, HashMap<Long, Long> mapping) {
         if (mapping == null) {
             return input;
         }
         if (mapping.containsKey(input)) {
             return mapping.get(input);
         }
-        Long newID = Long.valueOf(NEXT_ID++);
+        Long newID = Long.valueOf(workspace.getEnv().getNextBlockID());
         mapping.put(input, newID);
         return newID;
     }
-    
-    //Temp code so compiler can see all blocks
-    //TODO remove when a more appropriate method exists for the workspace
-    public static Iterable<Block> getAllBlocks() {
-        return ALL_BLOCKS.values();
-    }
-    
+
     /***********************************
     * State Saving Stuff for Undo/Redo *
     ***********************************/
@@ -1675,24 +1649,24 @@ public class Block implements ISupportMemento {
             if (state.plug == null) {
                 this.plug = null;
             } else {
-                this.plug = BlockConnector.instantiateFromState(state.plug);
+                this.plug = BlockConnector.instantiateFromState(workspace, state.plug);
             }
 
             if (state.before == null) {
                 this.before = null;
             } else {
-                this.before = BlockConnector.instantiateFromState(state.before);
+                this.before = BlockConnector.instantiateFromState(workspace, state.before);
             }
 
             if (state.after == null) {
                 this.after = null;
             } else {
-                this.after = BlockConnector.instantiateFromState(state.after);
+                this.after = BlockConnector.instantiateFromState(workspace, state.after);
             }
 
             for (int i = 0; i < state.numberOfSockets; i++) {
                 if (i >= this.getNumSockets()) {
-                    this.sockets.add(BlockConnector.instantiateFromState(state.sockets.get(i)));
+                    this.sockets.add(BlockConnector.instantiateFromState(workspace, state.sockets.get(i)));
                 } else {
                     this.sockets.get(i).loadState(state.sockets.get(i));
                 }

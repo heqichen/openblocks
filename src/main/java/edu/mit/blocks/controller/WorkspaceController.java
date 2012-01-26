@@ -63,8 +63,12 @@ public class WorkspaceController {
     private Element langDefRoot;
     private boolean isWorkspacePanelInitialized = false;
     protected JPanel workspacePanel;
-    protected Workspace workspace;
+    protected final Workspace workspace;
     protected SearchBar searchBar;
+
+    public Workspace getWorkspace() {
+		return this.workspace;
+	}
 
     //flag to indicate if a new lang definition file has been set
     private boolean langDefDirty = true;
@@ -85,7 +89,7 @@ public class WorkspaceController {
      *
      */
     public WorkspaceController() {
-        workspace = Workspace.getInstance();
+        this.workspace = new Workspace();
     }
     
     public void setLangDefDtd(InputStream is) {
@@ -156,11 +160,11 @@ public class WorkspaceController {
         BlockConnectorShape.loadBlockConnectorShapes(root);
 
         //load genuses
-        BlockGenus.loadBlockGenera(root);
+        BlockGenus.loadBlockGenera(workspace, root);
 
         //load rules
-        BlockLinkChecker.addRule(new CommandRule());
-        BlockLinkChecker.addRule(new SocketRule());
+        BlockLinkChecker.addRule(workspace, new CommandRule(workspace));
+        BlockLinkChecker.addRule(workspace, new SocketRule());
 
         //set the dirty flag for the language definition file 
         //to false now that the lang file has been loaded
@@ -174,7 +178,7 @@ public class WorkspaceController {
      */
     public void resetLanguage() {
         BlockConnectorShape.resetConnectorShapeMappings();
-        BlockGenus.resetAllGenuses();
+        getWorkspace().getEnv().resetAllGenuses();
         BlockLinkChecker.reset();
     }
 
@@ -208,6 +212,16 @@ public class WorkspaceController {
      * @return the DOM node for the entire workspace.
      */
     public Node getSaveNode() {
+    	return getSaveNode(true);
+    }
+    
+    /**
+     * Returns a DOM node for the entire workspace.  This includes the block workspace, any 
+     * custom factories, canvas view state and position, pages
+     * @param validate If {@code true}, perform a validation of the output against the code blocks schema
+     * @return the DOM node for the entire workspace.
+     */
+    public Node getSaveNode(boolean validate) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -225,7 +239,9 @@ public class WorkspaceController {
             }
 
             document.appendChild(documentElement);
-            validate(document);
+            if (validate) {
+            	validate(document);
+            }
 
             return document;
         }
@@ -304,6 +320,17 @@ public class WorkspaceController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Loads the programming project from the specified element.  
+     * This method assumes that a Language Definition File has already 
+     * been specified for this programming project.
+     * @param element element of the programming project to load
+     */
+    public void loadProjectFromElement(Element elementToLoad) {
+        workspace.loadWorkspaceFrom(elementToLoad, langDefRoot);
+        workspaceLoaded = true;
     }
 
     /**

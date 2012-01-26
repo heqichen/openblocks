@@ -12,11 +12,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import edu.mit.blocks.codeblocks.Block;
 import edu.mit.blocks.renderable.FactoryRenderableBlock;
 import edu.mit.blocks.renderable.RenderableBlock;
-
-import edu.mit.blocks.codeblocks.Block;
-import edu.mit.blocks.codeblocks.BlockGenus;
 
 /**
  * Utilities class that provides the loading and saving of
@@ -52,13 +50,11 @@ public class PageDrawerLoadingUtils {
         return null;
     }
 
-    private static boolean getBooleanValue(Node node, String nodeKey) {
+    public static boolean getBooleanValue(Node node, String nodeKey) {
         String bool = getNodeValue(node, nodeKey);
         if (bool != null) {
             if (bool.equals("no")) {
                 return false;
-            } else {
-                return true;
             }
         }
         return true;
@@ -72,7 +68,7 @@ public class PageDrawerLoadingUtils {
         return 0;
     }
 
-    public static void loadPagesAndDrawers(Element root, FactoryManager manager) {
+    public static void loadPagesAndDrawers(Workspace workspace, Element root, FactoryManager manager) {
         List<Page> pageList = new ArrayList<Page>();
         //pagesToAdd is needed so that we can add pages all at once
         //to the page bar once all the the pages been loaded
@@ -111,6 +107,9 @@ public class PageDrawerLoadingUtils {
                 }
             }
 
+            // whether pages should show a control to collapse them or not
+            boolean collapsiblePages = getBooleanValue(pagesNode, "collapsible-pages");
+            
             Page page;
             NodeList pages = pagesNode.getChildNodes();
             Node pageNode;
@@ -129,7 +128,7 @@ public class PageDrawerLoadingUtils {
                     pageDrawer = getNodeValue(pageNode, "page-drawer");
                     pageInFullView = getBooleanValue(pageNode, "page-infullview");
                     pageId = getNodeValue(pageNode, "page-id");
-                    page = new Page(pageName, pageWidth, 0, pageDrawer, pageInFullView, pageColor);
+                    page = new Page(workspace, pageName, pageWidth, 0, pageDrawer, pageInFullView, pageColor, collapsiblePages);
                     page.setPageId(pageId);
 
                     NodeList pageNodes = pageNode.getChildNodes();
@@ -148,9 +147,9 @@ public class PageDrawerLoadingUtils {
                                     Node genusMember = genusMembers.item(j);
                                     if (genusMember.getNodeName().equals("BlockGenusMember")) {
                                         genusName = genusMember.getTextContent();
-                                        assert BlockGenus.getGenusWithName(genusName) != null : "Unknown BlockGenus: " + genusName;
-                                        Block block = new Block(genusName);
-                                        drawerBlocks.add(new FactoryRenderableBlock(manager, block.getBlockID()));
+                                        assert workspace.getEnv().getGenusWithName(genusName) != null : "Unknown BlockGenus: " + genusName;
+                                        Block block = new Block(workspace, genusName);
+                                        drawerBlocks.add(new FactoryRenderableBlock(workspace, manager, block.getBlockID()));
                                     }
                                 }
                                 blocksForDrawers.put(drawer, drawerBlocks);
@@ -161,7 +160,7 @@ public class PageDrawerLoadingUtils {
 
                     if (isBlankPage) {
                         //place a blank page as the first page
-                        Workspace.getInstance().putPage(page, 0);
+                        workspace.putPage(page, 0);
                         //if the system uses blank pages, then we expect only one page
                         break;  //we anticipate only one page
                     } else {
@@ -170,9 +169,9 @@ public class PageDrawerLoadingUtils {
                         //add to workspace
                         if (position == 0) {
                             //replace the blank default page
-                            Workspace.getInstance().putPage(page, 0);
+                            workspace.putPage(page, 0);
                         } else {
-                            Workspace.getInstance().addPage(page, position);
+                            workspace.addPage(page, position);
                         }
                         pageList.add(position, page);
                     }
@@ -191,7 +190,7 @@ public class PageDrawerLoadingUtils {
         }
     }
 
-    public static void loadBlockDrawerSets(Element root, FactoryManager manager) {
+    public static void loadBlockDrawerSets(Workspace workspace, Element root, FactoryManager manager) {
         Pattern attrExtractor = Pattern.compile("\"(.*)\"");
         Matcher nameMatcher;
         NodeList drawerSetNodes = root.getElementsByTagName("BlockDrawerSet");
@@ -245,12 +244,12 @@ public class PageDrawerLoadingUtils {
                             blockNode = drawerBlocks.item(k);
                             if (blockNode.getNodeName().equals("BlockGenusMember")) {
                                 String genusName = blockNode.getTextContent();
-                                assert BlockGenus.getGenusWithName(genusName) != null : "Unknown BlockGenus: " + genusName;
+                                assert workspace.getEnv().getGenusWithName(genusName) != null : "Unknown BlockGenus: " + genusName;
                                 Block newBlock;
                                 //don't link factory blocks to their stubs because they will
                                 //forever remain inside the drawer and never be active
-                                newBlock = new Block(genusName, false);
-                                drawerRBs.add(new FactoryRenderableBlock(manager, newBlock.getBlockID()));
+                                newBlock = new Block(workspace, genusName, false);
+                                drawerRBs.add(new FactoryRenderableBlock(workspace, manager, newBlock.getBlockID()));
                             }
                         }
                         manager.addStaticBlocks(drawerRBs, drawerName);
