@@ -148,7 +148,7 @@ public class WorkspaceController {
             }
             doc = builder.parse(in);
             // TODO modify the L10N text and style here
-            // Modifiy the text according to the Java I18N resource bundle
+            // Modifiy the text according to the Java I18N resource bundle, current hack is specific to ArduBlock
             if (langResourceBundle != null) {
             	NodeList nodes = doc.getElementsByTagName("BlockGenus");
             	for (int i = 0 ; i < nodes.getLength(); i++) {
