@@ -13,6 +13,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -39,6 +40,7 @@ import javax.xml.validation.Validator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.EntityResolver;
@@ -82,6 +84,9 @@ public class WorkspaceController {
     private File selectedFile;
     // Reference kept to be able to update frame title with current loaded file
     private JFrame frame;
+    
+    // I18N resource bundle
+    private ResourceBundle langResourceBundle;
 
     /**
      * Constructs a WorkspaceController instance that manages the
@@ -94,6 +99,10 @@ public class WorkspaceController {
     
     public void setLangDefDtd(InputStream is) {
     	langDefDtd = is;
+    }
+    
+    public void setLangResourceBundle(ResourceBundle bundle) {
+    	langResourceBundle = bundle;
     }
 
     /**
@@ -138,6 +147,20 @@ public class WorkspaceController {
             	});
             }
             doc = builder.parse(in);
+            // TODO modify the L10N text and style here
+            // Modifiy the text according to the Java I18N resource bundle
+            if (langResourceBundle != null) {
+            	NodeList nodes = doc.getElementsByTagName("BlockGenus");
+            	for (int i = 0 ; i < nodes.getLength(); i++) {
+            		Element elm = (Element)nodes.item(i);
+            		String name = elm.getAttribute("name");
+            		String altName = langResourceBundle.getString("bg." + name);
+            		if (altName != null) {
+            			elm.setAttribute("initlabel", altName);
+            		}
+            	}
+            }
+            
             langDefRoot = doc.getDocumentElement();
             langDefDirty = true;
         } catch (ParserConfigurationException e) {

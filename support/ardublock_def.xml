@@ -4,7 +4,7 @@
 <!-- 
 
 
-This describes every BlockGenus, BlockDrawer, BlockFamilies in Starlogo-TNG.
+This describes every BlockGenus, BlockDrawer, BlockFamilies in ArduBlock.
 
 Note: For BlockGenus, if genus A relies on another genus B, that genus B must be 
 specified in the xml file before genus A is specified.  We impose this requirement so 
