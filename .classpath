@@ -6,11 +6,6 @@
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="var" path="M2_REPO/jfree/jcommon/1.0.15/jcommon-1.0.15.jar"/>
   <classpathentry kind="var" path="M2_REPO/jfree/jfreechart/1.0.12/jfreechart-1.0.12.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jsoup/jsoup/1.6.1/jsoup-1.6.1.jar" sourcepath="M2_REPO/org/jsoup/jsoup/1.6.1/jsoup-1.6.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/Users/david/.m2/repository/org/jsoup/jsoup/1.6.1/jsoup-1.6.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
   <classpathentry kind="var" path="M2_REPO/junit/junit/4.8.1/junit-4.8.1.jar" sourcepath="M2_REPO/junit/junit/4.8.1/junit-4.8.1-sources.jar"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 </classpath>
