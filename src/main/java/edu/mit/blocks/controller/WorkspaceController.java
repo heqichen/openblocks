@@ -14,6 +14,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -93,6 +94,8 @@ public class WorkspaceController {
     
     // I18N resource bundle
     private ResourceBundle langResourceBundle;
+	// List of styles
+    private List<String[]> styleList;
 
     /**
      * Constructs a WorkspaceController instance that manages the
@@ -109,6 +112,10 @@ public class WorkspaceController {
     
     public void setLangResourceBundle(ResourceBundle bundle) {
     	langResourceBundle = bundle;
+    }
+    
+    public void setStyleList(List<String[]> list) {
+    	styleList = list;
     }
 
     /**
@@ -171,21 +178,26 @@ public class WorkspaceController {
     /**
      * Styling the color of the BlockGenus and other elements with color
      */
-    private void ardublockStyling(Document doc) {
-    	XPathFactory factory = XPathFactory.newInstance();
-    	XPath xpath = factory.newXPath();
-    	try {
-    		XPathExpression expr = xpath.compile("//BlockGenus[@name[starts-with(.,\"Tinker\")]]");
-    		NodeList bgs = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
-    		for(int i = 0; i < bgs.getLength(); i++) {
-    			Element bg = (Element)bgs.item(i);
-    			bg.setAttribute("color", "128 0 0");
-    		}
-    	} catch (XPathExpressionException e) {
-    		e.printStackTrace();
-    	}
-
-    }
+	private void ardublockStyling(Document doc) {
+		if (styleList != null) {
+			XPathFactory factory = XPathFactory.newInstance();
+			for (String[] style : styleList) {
+				XPath xpath = factory.newXPath();
+				try {
+					// XPathExpression expr = xpath.compile("//BlockGenus[@name[starts-with(.,\"Tinker\")]]/@color");
+					XPathExpression expr = xpath.compile(style[0]);
+					NodeList bgs = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+					for (int i = 0; i < bgs.getLength(); i++) {
+						Node bg = bgs.item(i);
+						bg.setNodeValue(style[1]);
+						// bg.setAttribute("color", "128 0 0");
+					}
+				} catch (XPathExpressionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
     
     /** 
      * l10n process for ArduBlock
