@@ -14,6 +14,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -36,6 +37,12 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathConstants;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -87,6 +94,8 @@ public class WorkspaceController {
     
     // I18N resource bundle
     private ResourceBundle langResourceBundle;
+	// List of styles
+    private List<String[]> styleList;
 
     /**
      * Constructs a WorkspaceController instance that manages the
@@ -103,6 +112,10 @@ public class WorkspaceController {
     
     public void setLangResourceBundle(ResourceBundle bundle) {
     	langResourceBundle = bundle;
+    }
+    
+    public void setStyleList(List<String[]> list) {
+    	styleList = list;
     }
 
     /**
@@ -148,18 +161,8 @@ public class WorkspaceController {
             }
             doc = builder.parse(in);
             // TODO modify the L10N text and style here
-            // Modifiy the text according to the Java I18N resource bundle, current hack is specific to ArduBlock
-            if (langResourceBundle != null) {
-            	NodeList nodes = doc.getElementsByTagName("BlockGenus");
-            	for (int i = 0 ; i < nodes.getLength(); i++) {
-            		Element elm = (Element)nodes.item(i);
-            		String name = elm.getAttribute("name");
-            		String altName = langResourceBundle.getString("bg." + name);
-            		if (altName != null) {
-            			elm.setAttribute("initlabel", altName);
-            		}
-            	}
-            }
+            ardublockLocalize(doc);
+            ardublockStyling(doc);
             
             langDefRoot = doc.getDocumentElement();
             langDefDirty = true;
@@ -169,6 +172,67 @@ public class WorkspaceController {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * Styling the color of the BlockGenus and other elements with color
+     */
+	private void ardublockStyling(Document doc) {
+		if (styleList != null) {
+			XPathFactory factory = XPathFactory.newInstance();
+			for (String[] style : styleList) {
+				XPath xpath = factory.newXPath();
+				try {
+					// XPathExpression expr = xpath.compile("//BlockGenus[@name[starts-with(.,\"Tinker\")]]/@color");
+					XPathExpression expr = xpath.compile(style[0]);
+					NodeList bgs = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+					for (int i = 0; i < bgs.getLength(); i++) {
+						Node bg = bgs.item(i);
+						bg.setNodeValue(style[1]);
+						// bg.setAttribute("color", "128 0 0");
+					}
+				} catch (XPathExpressionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+    
+    /** 
+     * l10n process for ArduBlock
+     */
+    private void ardublockLocalize(Document doc) {
+        if (langResourceBundle != null) {
+        	NodeList nodes = doc.getElementsByTagName("BlockGenus");
+        	for (int i = 0 ; i < nodes.getLength(); i++) {
+        		Element elm = (Element)nodes.item(i);
+        		String name = elm.getAttribute("name");
+        		String altName = langResourceBundle.getString("bg." + name);
+        		if (altName != null) {
+        			elm.setAttribute("initlabel", altName);
+        		}
+        	}
+        	nodes = doc.getElementsByTagName("BlockDrawer");
+        	for (int i = 0 ; i < nodes.getLength(); i++) {
+        		Element elm = (Element)nodes.item(i);
+        		String name = elm.getAttribute("name");
+        		String altName = langResourceBundle.getString(name);
+        		if (altName != null) {
+        			elm.setAttribute("name", altName);
+        		}
+        	}
+        	nodes = doc.getElementsByTagName("BlockConnector");
+        	for (int i = 0 ; i < nodes.getLength(); i++) {
+        		Element elm = (Element)nodes.item(i);
+        		String name = elm.getAttribute("label");
+        		if (name.startsWith("bc.")) {
+					String altName = langResourceBundle.getString(name);
+					if (altName != null) {
+						elm.setAttribute("label", altName);
+					}
+				}
+        	}
         }
     }
 
