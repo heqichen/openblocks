@@ -382,7 +382,8 @@ public class WorkspaceController {
      * been specified for this programming project.
      * @param path String file path of the programming project to load
      */
-    public void loadProjectFromPath(final String path) {
+    public void loadProjectFromPath(final String path) throws IOException
+    {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         final DocumentBuilder builder;
@@ -403,8 +404,6 @@ public class WorkspaceController {
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         } catch (SAXException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -523,7 +522,14 @@ public class WorkspaceController {
                 lastDirectory = selectedFile.getParentFile();
                 String selectedPath = selectedFile.getPath();
                 loadFreshWorkspace();
-                loadProjectFromPath(selectedPath);
+                try
+                {
+                	loadProjectFromPath(selectedPath);
+                }
+                catch (IOException ee)
+                {
+                	throw new RuntimeException(ee);
+                }
             }
         }
     }

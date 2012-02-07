@@ -156,5 +156,9 @@ public class WorkspaceEnvironment {
         nameToGenus.clear();
     }
 
-
+    //add by HE Qichen 20120126
+    public Iterable<RenderableBlock> getRenderableBlocks()
+    {
+    	return allRenderableBlocks.values();
+    }
 }
