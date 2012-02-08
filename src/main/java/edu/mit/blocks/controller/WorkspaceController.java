@@ -64,7 +64,7 @@ import edu.mit.blocks.workspace.Workspace;
 
 /**
  * Example entry point to OpenBlock application creation.
- * 
+ *
  * @author Ricarose Roque
  */
 public class WorkspaceController {
@@ -119,7 +119,7 @@ public class WorkspaceController {
     }
 
     /**
-     * Sets the file path for the language definition file, if the 
+     * Sets the file path for the language definition file, if the
      * language definition file is located in
      */
     public void setLangDefFilePath(final String filePath) {
@@ -141,7 +141,7 @@ public class WorkspaceController {
             }
         }
     }
-    
+
     /**
      * Sets language definition file from the given input stream
      * @param in input stream to read
@@ -237,7 +237,7 @@ public class WorkspaceController {
     }
 
     /**
-     * Loads all the block genuses, properties, and link rules of 
+     * Loads all the block genuses, properties, and link rules of
      * a language specified in the pre-defined language def file.
      * @param root Loads the language specified in the Element root
      */
@@ -253,7 +253,7 @@ public class WorkspaceController {
         BlockLinkChecker.addRule(workspace, new CommandRule(workspace));
         BlockLinkChecker.addRule(workspace, new SocketRule());
 
-        //set the dirty flag for the language definition file 
+        //set the dirty flag for the language definition file
         //to false now that the lang file has been loaded
         langDefDirty = false;
     }
@@ -270,14 +270,14 @@ public class WorkspaceController {
     }
 
     /**
-     * Returns the save string for the entire workspace.  This includes the block workspace, any 
+     * Returns the save string for the entire workspace.  This includes the block workspace, any
      * custom factories, canvas view state and position, pages
      * @return the save string for the entire workspace.
      */
     public String getSaveString() {
         try {
             Node node = getSaveNode();
-            
+
             StringWriter writer = new StringWriter();
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
@@ -292,23 +292,25 @@ public class WorkspaceController {
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
-     * Returns a DOM node for the entire workspace.  This includes the block workspace, any 
+     * Returns a DOM node for the entire workspace.  This includes the block workspace, any
      * custom factories, canvas view state and position, pages
      * @return the DOM node for the entire workspace.
      */
     public Node getSaveNode() {
-    	return getSaveNode(true);
+        return getSaveNode(true);
     }
-    
+
     /**
-     * Returns a DOM node for the entire workspace.  This includes the block workspace, any 
-     * custom factories, canvas view state and position, pages
-     * @param validate If {@code true}, perform a validation of the output against the code blocks schema
+     * Returns a DOM node for the entire workspace. This includes the block
+     * workspace, any custom factories, canvas view state and position, pages
+     *
+     * @param validate If {@code true}, perform a validation of the output
+     * against the code blocks schema
      * @return the DOM node for the entire workspace.
      */
-    public Node getSaveNode(boolean validate) {
+    public Node getSaveNode(final boolean validate) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -327,7 +329,7 @@ public class WorkspaceController {
 
             document.appendChild(documentElement);
             if (validate) {
-            	validate(document);
+                validate(document);
             }
 
             return document;
@@ -362,8 +364,8 @@ public class WorkspaceController {
     }
 
     /**
-     * Loads a fresh workspace based on the default specifications in the language 
-     * definition file.  The block canvas will have no live blocks.   
+     * Loads a fresh workspace based on the default specifications in the language
+     * definition file.  The block canvas will have no live blocks.
      */
     public void loadFreshWorkspace() {
         if (workspaceLoaded) {
@@ -377,8 +379,8 @@ public class WorkspaceController {
     }
 
     /**
-     * Loads the programming project from the specified file path.  
-     * This method assumes that a Language Definition File has already 
+     * Loads the programming project from the specified file path.
+     * This method assumes that a Language Definition File has already
      * been specified for this programming project.
      * @param path String file path of the programming project to load
      */
@@ -391,13 +393,13 @@ public class WorkspaceController {
         try {
             builder = factory.newDocumentBuilder();
             doc = builder.parse(new File(path));
-            
+
             // XXX here, we could be strict and only allow valid documents...
             // validate(doc);
             final Element projectRoot = doc.getDocumentElement();
             //load the canvas (or pages and page blocks if any) blocks from the save file
             //also load drawers, or any custom drawers from file.  if no custom drawers
-            //are present in root, then the default set of drawers is loaded from 
+            //are present in root, then the default set of drawers is loaded from
             //langDefRoot
             workspace.loadWorkspaceFrom(projectRoot, langDefRoot);
             workspaceLoaded = true;
@@ -409,9 +411,10 @@ public class WorkspaceController {
     }
 
     /**
-     * Loads the programming project from the specified element.  
-     * This method assumes that a Language Definition File has already 
-     * been specified for this programming project.
+     * Loads the programming project from the specified element. This method
+     * assumes that a Language Definition File has already been specified for
+     * this programming project.
+     *
      * @param element element of the programming project to load
      */
     public void loadProjectFromElement(Element elementToLoad) {
@@ -420,20 +423,20 @@ public class WorkspaceController {
     }
 
     /**
-     * Loads the programming project specified in the projectContents String, 
-     * which is associated with the language definition file contained in the 
+     * Loads the programming project specified in the projectContents String,
+     * which is associated with the language definition file contained in the
      * specified langDefContents.  All the blocks contained in projectContents
      * must have an associted block genus defined in langDefContents.
-     * 
-     * If the langDefContents have any workspace settings such as pages or 
-     * drawers and projectContents has workspace settings as well, the 
-     * workspace settings within the projectContents will override the 
-     * workspace settings in langDefContents.  
-     * 
-     * NOTE: The language definition contained in langDefContents does 
-     * not replace the default language definition file set by: setLangDefFilePath() or 
+     *
+     * If the langDefContents have any workspace settings such as pages or
+     * drawers and projectContents has workspace settings as well, the
+     * workspace settings within the projectContents will override the
+     * workspace settings in langDefContents.
+     *
+     * NOTE: The language definition contained in langDefContents does
+     * not replace the default language definition file set by: setLangDefFilePath() or
      * setLangDefFile().
-     * 
+     *
      * @param projectContents
      * @param langDefContents String XML that defines the language of
      * projectContents
@@ -469,7 +472,7 @@ public class WorkspaceController {
     }
 
     /**
-     * Resets the entire workspace.  This includes all blocks, pages, drawers, and trashed blocks.  
+     * Resets the entire workspace.  This includes all blocks, pages, drawers, and trashed blocks.
      * Also resets the undo/redo stack.  The language (i.e. genuses and shapes) is not reset.
      */
     public void resetWorkspace() {
@@ -480,8 +483,8 @@ public class WorkspaceController {
     }
 
     /**
-     * This method creates and lays out the entire workspace panel with its 
-     * different components.  Workspace and language data not loaded in 
+     * This method creates and lays out the entire workspace panel with its
+     * different components.  Workspace and language data not loaded in
      * this function.
      * Should be call only once at application startup.
      */
@@ -493,8 +496,8 @@ public class WorkspaceController {
     }
 
     /**
-     * Returns the JComponent of the entire workspace. 
-     * @return the JComponent of the entire workspace. 
+     * Returns the JComponent of the entire workspace.
+     * @return the JComponent of the entire workspace.
      */
     public JComponent getWorkspacePanel() {
         if (!isWorkspacePanelInitialized) {
@@ -513,7 +516,7 @@ public class WorkspaceController {
         OpenAction() {
             super("Open");
         }
-        
+
         @Override
         public void actionPerformed(ActionEvent e) {
             JFileChooser fileChooser = new JFileChooser(lastDirectory);
@@ -561,7 +564,7 @@ public class WorkspaceController {
             }
         }
     }
-    
+
     /**
      * Action bound to "Save As..." button.
      */
@@ -581,10 +584,10 @@ public class WorkspaceController {
             saveAction.actionPerformed(e);
         }
     }
-    
+
     /**
      * Saves the content of the workspace to the given file
-     * @param file Destination file 
+     * @param file Destination file
      * @throws IOException If save failed
      */
     private void saveToFile(File file) throws IOException {
@@ -599,7 +602,7 @@ public class WorkspaceController {
             }
         }
     }
-    
+
     public void setSelectedFile(File selectedFile) {
         this.selectedFile = selectedFile;
         frame.setTitle("WorkspaceDemo - "+selectedFile.getPath());
@@ -623,7 +626,7 @@ public class WorkspaceController {
     }
 
     /**
-     * Returns a SearchBar instance capable of searching for blocks 
+     * Returns a SearchBar instance capable of searching for blocks
      * within the BlockCanvas and block drawers
      */
     public JComponent getSearchBar() {
