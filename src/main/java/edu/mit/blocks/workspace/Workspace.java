@@ -815,7 +815,6 @@ public class Workspace extends JLayeredPane implements ISupportMemento, RBParent
 				}
 			}
 
-			System.out.println("maxId: " + maxId);
 			env.setNextBlockID(maxId+1);
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
