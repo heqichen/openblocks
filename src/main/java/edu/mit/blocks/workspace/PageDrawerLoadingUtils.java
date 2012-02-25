@@ -21,7 +21,6 @@ import edu.mit.blocks.renderable.RenderableBlock;
  * pages and drawers
  *
  * @author An Ho
- *
  */
 public class PageDrawerLoadingUtils {
 
@@ -88,23 +87,21 @@ public class PageDrawerLoadingUtils {
             Node opt_item = pagesNode.getAttributes().getNamedItem("drawer-with-page");
             if (opt_item != null) {
                 Matcher nameMatcher = attrExtractor.matcher(opt_item.toString());
-                if (nameMatcher.find()) //will be true
-                {
+                if (nameMatcher.find()) {
                     Workspace.everyPageHasDrawer = nameMatcher.group(1).equals("yes") ? true : false;
                 }
             }
             opt_item = pagesNode.getAttributes().getNamedItem("is-blank-page");
             if (opt_item != null) {
                 Matcher nameMatcher = attrExtractor.matcher(opt_item.toString());
-                if (nameMatcher.find()) //will be true
-                {
+                if (nameMatcher.find()) {
                     isBlankPage = nameMatcher.group(1).equals("yes") ? true : false;
                 }
             }
 
             // whether pages should show a control to collapse them or not
             boolean collapsiblePages = getBooleanValue(pagesNode, "collapsible-pages");
-            
+
             Page page;
             NodeList pages = pagesNode.getChildNodes();
             Node pageNode;
