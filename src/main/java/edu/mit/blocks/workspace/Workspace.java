@@ -26,6 +26,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathConstants;
+
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -776,6 +783,45 @@ public class Workspace extends JLayeredPane implements ISupportMemento, RBParent
     	return blockCanvas.getSaveNode(document);
     }
 
+    
+    /**
+     * Set the MaxBlockId for WorkspaceEnvironment 
+     * @param newRoot
+     * @param originalLangRoot
+     */
+	private void setMaxBlockId(Element newRoot, Element originalLangRoot) {
+		XPathFactory factory = XPathFactory.newInstance();
+		XPath xpath = factory.newXPath();
+		XPathExpression expr;
+		long maxId = 1;
+		try {
+			expr = xpath.compile("//@id");
+
+			if (newRoot != null) {
+				NodeList bgs = (NodeList) expr.evaluate(newRoot, XPathConstants.NODESET);
+				for (int i = 0; i < bgs.getLength(); i++) {
+					Attr attr = (Attr) bgs.item(i);
+					long myId = Long.parseLong(attr.getValue());
+					maxId = myId > maxId ? myId : maxId;
+				}
+			}
+
+			if (originalLangRoot != null) {
+				NodeList bgs = (NodeList) expr.evaluate(originalLangRoot, XPathConstants.NODESET);
+				for (int i = 0; i < bgs.getLength(); i++) {
+					Attr attr = (Attr) bgs.item(i);
+					long myId = Long.parseLong(attr.getValue());
+					maxId = myId > maxId ? myId : maxId;
+				}
+			}
+
+			System.out.println("maxId: " + maxId);
+			env.setNextBlockID(maxId+1);
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+	}
+    
     /**
      * Loads the workspace with the following content:
      * - RenderableBlocks and their associated Block instances that reside
@@ -788,6 +834,8 @@ public class Workspace extends JLayeredPane implements ISupportMemento, RBParent
      * @requires originalLangRoot != null
      */
     public void loadWorkspaceFrom(Element newRoot, Element originalLangRoot) {
+    	setMaxBlockId(newRoot, originalLangRoot);
+    	
         if (newRoot != null) {
             //load pages, page drawers, and their blocks from save file
             blockCanvas.loadSaveString(newRoot);
