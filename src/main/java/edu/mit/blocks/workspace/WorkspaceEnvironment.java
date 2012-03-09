@@ -67,6 +67,10 @@ public class WorkspaceEnvironment {
     public long getNextBlockID() {
     	return this.nextBlockID++;
     }
+    
+    public void setNextBlockID(long blockID) {
+    	nextBlockID = blockID;
+    }
 
     // BlockStubs
 

@@ -29,19 +29,20 @@ import edu.mit.blocks.codeblockutil.CHoverScrollPane;
 import edu.mit.blocks.codeblockutil.CScrollPane;
 import edu.mit.blocks.codeblockutil.CScrollPane.ScrollPolicy;
 import edu.mit.blocks.renderable.RenderableBlock;
+import org.w3c.dom.NodeList;
 
 /**
- * A BlockCanvas is a container of Pages and is a scrollable 
- * panel.  When a page is added to a BlockCanvas, that 
- * particular new page must be added to both the data 
- * structure holding the set of pages and the scrollable 
+ * A BlockCanvas is a container of Pages and is a scrollable
+ * panel.  When a page is added to a BlockCanvas, that
+ * particular new page must be added to both the data
+ * structure holding the set of pages and the scrollable
  * panel that renders the page.
- * 
- * A BlockCanvas is also a PageChangeListener.  When any 
- * pages are changed, the Blockcanvas must update itself 
+ *
+ * A BlockCanvas is also a PageChangeListener.  When any
+ * pages are changed, the Blockcanvas must update itself
  * appropriately to reflect this change.
- * 
- * As of the current implementation, the BlockCanvas must 
+ *
+ * As of the current implementation, the BlockCanvas must
  * have at least one Page when it becomes visible (that is,
  * when its viewable JComponent becomes visible).
  */
@@ -96,38 +97,38 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
     //////////////////////////////
     //Rendering View Accessor	//
     //////////////////////////////
-    /** @returns X Coordinate of BlockCanvas graphical representation */
+    /** @return X Coordinate of BlockCanvas graphical representation */
     public int getX() {
         return scrollPane.getX();
     }
 
-    /** @returns Y coordinate of BlockCanvas graphical representation */
+    /** @return Y coordinate of BlockCanvas graphical representation */
     public int getY() {
         return scrollPane.getY();
     }
 
-    /** @returns width of BlockCanvas graphical representation */
+    /** @return width of BlockCanvas graphical representation */
     public int getWidth() {
         return scrollPane.getWidth();
     }
 
-    /** @returns height of BlockCanvas graphical representation */
+    /** @return height of BlockCanvas graphical representation */
     public int getHeight() {
         return scrollPane.getHeight();
     }
 
-    /** @returns vertical scroll bar bounding range model.  MAY BE NULL */
+    /** @return vertical scroll bar bounding range model.  MAY BE NULL */
     public BoundedRangeModel getVerticalModel() {
         return scrollPane.getVerticalModel();
     }
 
-    /** @returns horizontal scroll bar bounding range model.  MAY BE NULL */
+    /** @return horizontal scroll bar bounding range model.  MAY BE NULL */
     public BoundedRangeModel getHorizontalModel() {
         return scrollPane.getHorizontalModel();
     }
 
     /**
-     * @returns the Swing Container that holds all the graphical panels of
+     * @return the Swing Container that holds all the graphical panels of
      * 			all the pages in this Blockcanvas
      */
     public JComponent getCanvas() {
@@ -135,15 +136,16 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
     }
 
     /**
-     * @returns JComponent representation of this
-     * @warning Please take special care in useing this method, as it exposes
+     * Warning: Please take special care in useing this method, as it exposes
      * 			implementation details.
+     * @return JComponent representation of this
      */
     public JComponent getJComponent() {
         return scrollPane;
     }
 
-    /** @returns string representation of this */
+    /** @return string representation of this */
+    @Override
     public String toString() {
         return "BlockCanvas " + pages.size() + " pages.";
     }
@@ -215,7 +217,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
     //Page Mutators/Accessors	//
     //////////////////////////////
     /**
-     * @returns the number of Pages.
+     * @return the number of Pages.
      */
     public int numOfPages() {
         return pages.size();
@@ -223,7 +225,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
 
     /**
      * @param position - 0 is the left most position
-     * 
+     *
      * @requires none
      * @return true if there exists a page at the specified position
      */
@@ -233,7 +235,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
 
     /**
      * @param position - 0 is the left most position
-     * 
+     *
      * @requires none
      * @return page at position or null if non exists at position
      */
@@ -247,7 +249,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
 
     /**
      * @param name - name of page
-     * 
+     *
      * @requires none
      * @return  FIRST page with matchng name (if more than
      * 			one page has matching name, it returns the first) or null
@@ -271,7 +273,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
 
     /**
      * @param page the page to add to the BlockCanvas
-     * 
+     *
      * @requires page != null
      * @modifies this.pages
      * @effects Adds the given page to the rightmost side of the BlockCanvas
@@ -283,14 +285,14 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
     /**
      * @param page - page to be added
      * @param position - the index at which to add the page where 0 is rightmost
-     * 
+     *
      * @requires none
      * @modifies this.pages
      * @effects Inserts the specified page at the specified position.
      * 			Shifts the element currently at that position (if any)
      * 			and any subsequent elements to the right (adds one to
      * 			their current position).
-     * @throws RuntimeException if (position < 0 || position > pages.size() || page == null) 
+     * @throws RuntimeException if (position < 0 || position > pages.size() || page == null)
      */
     public void addPage(Page page, int position) {
         if (page == null) {
@@ -309,7 +311,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
 
     /**
      * @param page - the page to be removed
-     * 
+     *
      * @requires page != null
      * @modifies this.pages
      * @effects Removes the given Page from the BlockCanvas.
@@ -343,9 +345,9 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
 
     /**
      * @param position - 0 is the left most page
-     * 
+     *
      * @requires none
-     * @returns the page that was removed or null if non was removed.
+     * @return the page that was removed or null if non was removed.
      * @modifies this.pages
      * @effects If the position is within bounds, then remove
      * 			the page located at the specified position.
@@ -361,8 +363,8 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
 
     /**
      * @param page the desired page to switch view to
-     * 
-     * @requries page != null
+     *
+     * @requires page != null
      * @modifies the ghorizontal boundedrangemodel of this blockcanvas
      * @effects Switches the canvas view to the specified page.
      */
@@ -373,7 +375,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
     /**
      * @param oldName - the original name of the page
      * @param newName - the String name to rename the page to
-     * 
+     *
      * @requires oldName != null && newName != null
      * @return 	If a matching page was found, return the renamed Page.
      * 			Otherwise, return null.
@@ -394,7 +396,8 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
     ////////////////////////////////
     //PageChangeListener Interface//
     ////////////////////////////////
-    /** @override PageChangeListener.update() */
+    /** @overrides PageChangeListener.update() */
+    @Override
     public void update() {
         this.reformBlockCanvas(); // just repaint and it'll all look right again
     }
@@ -437,35 +440,34 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
     //Saving and Loading		//
     //////////////////////////////
     /**
-     * Returns an XML node describing all the blocks and pages within 
+     * Returns an XML node describing all the blocks and pages within
      * the BlockCanvas
      * @return Node or {@code null} if there are no pages
      */
     public Node getSaveNode(Document document) {
-    	if (pages.size() > 0) {
-    		// TODO ria just do BLOCKS, CHECK OUT HOW SAVING WILL BE LIKE WITH REFACTORING
-    		Element pageElement = document.createElement("Pages");
-    		if (Workspace.everyPageHasDrawer) {
-    			pageElement.setAttribute("drawer-with-page", "yes");
-    		}
-    		pageElement.setAttribute("collapsible-pages", collapsible?"yes":"no");
-    		for (Page page: pages) {
-    			Node pageNode = page.getSaveNode(document);
-    			pageElement.appendChild(pageNode);
-    		}
-    		
-    		return pageElement;
-    	}
-    	
-    	return null;
+        if (pages.size() > 0) {
+            // TODO ria just do BLOCKS, CHECK OUT HOW SAVING WILL BE LIKE WITH REFACTORING
+            Element pageElement = document.createElement("Pages");
+            if (Workspace.everyPageHasDrawer) {
+                pageElement.setAttribute("drawer-with-page", "yes");
+            }
+            pageElement.setAttribute("collapsible-pages", collapsible ? "yes" : "no");
+            for (Page page : pages) {
+                Node pageNode = page.getSaveNode(document);
+                pageElement.appendChild(pageNode);
+            }
+            return pageElement;
+        }
+
+        return null;
     }
 
     /**
-     * Loads all the RenderableBlocks and their associated Blocks that 
+     * Loads all the RenderableBlocks and their associated Blocks that
      * reside within the block canvas.  All blocks will have their nessary
      * data populated including connection information, stubs, etc.
-     * Note: This method should only be called if this language only uses the 
-     * BlockCanvas to work with blocks and no pages. Otherwise, workspace live blocks 
+     * Note: This method should only be called if this language only uses the
+     * BlockCanvas to work with blocks and no pages. Otherwise, workspace live blocks
      * are loaded from Pages.
      * @param root the Document Element containing the desired information
      */
@@ -475,32 +477,32 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
         //load pages, page drawers, and their blocks from save file
         //PageDrawerManager.loadPagesAndDrawers(root);
         PageDrawerLoadingUtils.loadPagesAndDrawers(workspace, root, workspace.getFactoryManager());
-        
-        NodeList pagesRoot = root.getElementsByTagName("Pages");
-        if(pagesRoot != null && pagesRoot.getLength()>0) {
-            Node pagesNode = pagesRoot.item(0);
-            if(pagesNode != null) {
+
+        final NodeList pagesRoot = root.getElementsByTagName("Pages");
+        if (pagesRoot != null && pagesRoot.getLength() > 0) {
+            final Node pagesNode = pagesRoot.item(0);
+            if (pagesNode != null) {
                 collapsible = PageDrawerLoadingUtils.getBooleanValue(pagesNode, "collapsible-pages");
             }
         }
-        
+
         // FIXME: this UI code should not be here, fails unit tests that run in headless mode
         // As a workaround, only execute if we have a UI
         if (!GraphicsEnvironment.isHeadless()) {
-        	int screenWidth = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
-        	int canvasWidth = canvas.getPreferredSize().width;
-        	if (canvasWidth < screenWidth) {
-        		Page p = pages.get(pages.size() - 1);
-        		p.addPixelWidth(screenWidth - canvasWidth);
-        		PageChangeEventManager.notifyListeners();
-        	}
+            int screenWidth = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
+            int canvasWidth = canvas.getPreferredSize().width;
+            if (canvasWidth < screenWidth) {
+                Page p = pages.get(pages.size() - 1);
+                p.addPixelWidth(screenWidth - canvasWidth);
+                PageChangeEventManager.notifyListeners();
+            }
         }
     }
 
     //////////////////////////////
     //REDO/UNOD					//
     //////////////////////////////
-    /** @override ISupportMomento.getState */
+    /** @overrides ISupportMomento.getState */
     public Object getState() {
         Map<String, Object> pageStates = new HashMap<String, Object>();
         for (Page page : pages) {
@@ -509,7 +511,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
         return pageStates;
     }
 
-    /** @override ISupportMomento.loadState() */
+    /** @overrides ISupportMomento.loadState() */
     @SuppressWarnings("unchecked")
     public void loadState(Object memento) {
         assert (memento instanceof HashMap) : "ISupportMemento contract violated in BlockCanvas";
