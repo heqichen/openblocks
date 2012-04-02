@@ -37,7 +37,6 @@ public class WorkspaceEnvironment {
     }
 
     public void addRenderableBlock(RenderableBlock block) {
-    	System.out.println("===\n" + block.getBlockID() + " : " + block.getBlock().getBlockLabel() + "\n===\n");
     	this.allRenderableBlocks.put(block.getBlockID(), block);
     }
 
