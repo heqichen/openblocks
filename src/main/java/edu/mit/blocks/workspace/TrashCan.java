@@ -85,7 +85,6 @@ public class TrashCan extends JComponent implements MouseListener, WorkspaceWidg
 
     public void addBlock(RenderableBlock block) {
     }
-
     public void addBlocks(Collection<RenderableBlock> block) {
     }
 

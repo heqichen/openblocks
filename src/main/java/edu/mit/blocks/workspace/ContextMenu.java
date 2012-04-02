@@ -4,6 +4,7 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ResourceBundle;
 
 import edu.mit.blocks.renderable.RenderableBlock;
 
@@ -28,6 +29,9 @@ public class ContextMenu extends PopupMenu implements ActionListener {
     private static MenuItem removeCommentItem;
     private final static String REMOVE_COMMENT_BLOCK = "REMOVECOMMENT";
     private static boolean removeCommentMenuInit = false;
+    private final static String CLONE_BLOCK = "CLONE";	//heqichen
+    private static MenuItem cloneItem1 = null;	//heqichen
+    private static MenuItem cloneItem2 = null;	//heqichen
     //context menu for canvas plus
     //menu items for canvas context menu
     private static ContextMenu canvasMenu = new ContextMenu();
@@ -49,7 +53,15 @@ public class ContextMenu extends PopupMenu implements ActionListener {
         addCommentItem.setActionCommand(ADD_COMMENT_BLOCK);
         addCommentItem.addActionListener(rndBlockMenu);
         addCommentMenu.add(addCommentItem);
+        
+    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com.ardublock.ui");
+    	cloneItem1 = new MenuItem(uiMessageBundle.getString("ardublock.ui.clone"));
+    	cloneItem1.setActionCommand(CLONE_BLOCK);
+    	cloneItem1.addActionListener(rndBlockMenu);
+        addCommentMenu.add(cloneItem1);
+        
         addCommentMenuInit = true;
+        
     }
 
     /**
@@ -63,7 +75,13 @@ public class ContextMenu extends PopupMenu implements ActionListener {
 
         removeCommentMenu.add(removeCommentItem);
         //rndBlockMenu.add(runBlockItem);
-
+        
+    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com.ardublock.ui");
+    	cloneItem2 = new MenuItem(uiMessageBundle.getString("ardublock.ui.clone"));
+    	cloneItem2.setActionCommand(CLONE_BLOCK);
+    	cloneItem2.addActionListener(rndBlockMenu);
+        removeCommentMenu.add(cloneItem2);
+        
         removeCommentMenuInit = true;
     }
 
@@ -128,6 +146,11 @@ public class ContextMenu extends PopupMenu implements ActionListener {
             //notify the renderableblock componenet that lauched the conetxt menu
             if (activeComponent != null && activeComponent instanceof RenderableBlock) {
                 ((RenderableBlock) activeComponent).removeComment();
+            }
+        } else if (a.getActionCommand() == CLONE_BLOCK) {
+        	//notify the renderableblock componenet that lauched the conetxt menu
+            if (activeComponent != null && activeComponent instanceof RenderableBlock) {
+                ((RenderableBlock) activeComponent).cloneMe();
             }
         }
     }

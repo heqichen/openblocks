@@ -30,6 +30,8 @@ public class WorkspaceEvent {
     //workspace specific event
     public final static int WORKSPACE_FINISHED_LOADING = 100;
     
+    public final static int BLOCK_CLONED = 51;
+    
     private final Workspace workspace;
     
     private Long blockID = Block.NULL;

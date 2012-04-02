@@ -55,7 +55,7 @@ public interface WorkspaceWidget {
      * @param block the desired RenderableBlock to add to this
      */
     public void addBlock(RenderableBlock block);  //TODO ria maybe rename this to putBlock?
-
+    
     /**
      * Adds a collection of blocks to this widget internally and graphically.
      * This method adds blocks internally first, and only updates graphically

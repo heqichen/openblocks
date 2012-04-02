@@ -438,7 +438,6 @@ public class MiniMap extends JPanel implements WorkspaceWidget, MouseListener, M
 
     public void addBlock(RenderableBlock block) {
     }
-
     public void addBlocks(Collection<RenderableBlock> blocks) {
     }
 

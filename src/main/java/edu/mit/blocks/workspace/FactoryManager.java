@@ -774,7 +774,6 @@ public class FactoryManager implements WorkspaceWidget, ComponentListener, Works
 
     public void addBlock(RenderableBlock block) {
     }
-
     public void addBlocks(Collection<RenderableBlock> blocks) {
     }
 

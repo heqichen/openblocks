@@ -1406,11 +1406,15 @@ public class Block implements ISupportMemento {
             //load attributes
             nameMatcher = attrExtractor.matcher(node.getAttributes().getNamedItem("id").toString());
             if (nameMatcher.find()) {
-                //id = translateLong(workspace, Long.parseLong(nameMatcher.group(1)), idMapping);
+                id = translateLong(workspace, Long.parseLong(nameMatcher.group(1)), idMapping);
             	//BUG: id may conflict with the new Block
             	//bug fix: HE Qichen 2012-2-24
-            	WorkspaceEnvironment workspaceEnv = workspace.getEnv();
+            	
+                /*
+                WorkspaceEnvironment workspaceEnv = workspace.getEnv();
                 id = workspaceEnv.getNextBlockID();
+                System.out.println(id);
+                */
             }
             nameMatcher = attrExtractor.matcher(node.getAttributes().getNamedItem("genus-name").toString());
             if (nameMatcher.find()) {
