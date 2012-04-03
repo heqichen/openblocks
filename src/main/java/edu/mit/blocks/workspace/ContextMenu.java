@@ -49,12 +49,13 @@ public class ContextMenu extends PopupMenu implements ActionListener {
      * Initializes the context menu for adding Comments.
      */
     private static void initAddCommentMenu() {
-        addCommentItem = new MenuItem("Add Comment");
+    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");
+    	
+    	addCommentItem = new MenuItem(uiMessageBundle.getString("ardublock.ui.add_comment"));
         addCommentItem.setActionCommand(ADD_COMMENT_BLOCK);
         addCommentItem.addActionListener(rndBlockMenu);
         addCommentMenu.add(addCommentItem);
         
-    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");
     	cloneItem1 = new MenuItem(uiMessageBundle.getString("ardublock.ui.clone"));
     	cloneItem1.setActionCommand(CLONE_BLOCK);
     	cloneItem1.addActionListener(rndBlockMenu);
@@ -68,15 +69,16 @@ public class ContextMenu extends PopupMenu implements ActionListener {
      * Initializes the context menu for deleting Comments.
      */
     private static void initRemoveCommentMenu() {
-
-        removeCommentItem = new MenuItem("Delete Comment");
+    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");
+    	
+        removeCommentItem = new MenuItem(uiMessageBundle.getString("ardublock.ui.delete_comment"));
         removeCommentItem.setActionCommand(REMOVE_COMMENT_BLOCK);
         removeCommentItem.addActionListener(rndBlockMenu);
 
         removeCommentMenu.add(removeCommentItem);
         //rndBlockMenu.add(runBlockItem);
         
-    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");
+    	
     	cloneItem2 = new MenuItem(uiMessageBundle.getString("ardublock.ui.clone"));
     	cloneItem2.setActionCommand(CLONE_BLOCK);
     	cloneItem2.addActionListener(rndBlockMenu);
@@ -90,7 +92,9 @@ public class ContextMenu extends PopupMenu implements ActionListener {
      *
      */
     private static void initCanvasMenu() {
-        arrangeAllBlocks = new MenuItem("Organize all blocks");  //TODO some workspaces don't have pages
+    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");
+    	
+        arrangeAllBlocks = new MenuItem(uiMessageBundle.getString("ardublock.ui.organize_blocks"));  //TODO some workspaces don't have pages
         arrangeAllBlocks.setActionCommand(ARRANGE_ALL_BLOCKS);
         arrangeAllBlocks.addActionListener(canvasMenu);
 
