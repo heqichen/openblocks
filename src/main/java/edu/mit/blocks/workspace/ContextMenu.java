@@ -54,7 +54,7 @@ public class ContextMenu extends PopupMenu implements ActionListener {
         addCommentItem.addActionListener(rndBlockMenu);
         addCommentMenu.add(addCommentItem);
         
-    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com.ardublock.ui");
+    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");
     	cloneItem1 = new MenuItem(uiMessageBundle.getString("ardublock.ui.clone"));
     	cloneItem1.setActionCommand(CLONE_BLOCK);
     	cloneItem1.addActionListener(rndBlockMenu);
@@ -76,7 +76,7 @@ public class ContextMenu extends PopupMenu implements ActionListener {
         removeCommentMenu.add(removeCommentItem);
         //rndBlockMenu.add(runBlockItem);
         
-    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com.ardublock.ui");
+    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");
     	cloneItem2 = new MenuItem(uiMessageBundle.getString("ardublock.ui.clone"));
     	cloneItem2.setActionCommand(CLONE_BLOCK);
     	cloneItem2.addActionListener(rndBlockMenu);
