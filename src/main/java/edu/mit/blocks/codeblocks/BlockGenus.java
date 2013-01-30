@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.ResourceBundle;
+import java.util.MissingResourceException;
 
 import javax.swing.ImageIcon;
 
@@ -469,7 +471,7 @@ public class BlockGenus {
      * Modified to translate the ToolTip
 	 *  ldgneto@gmail.com 
 	 * */
-    private static void loadGenusDescription(NodeList descriptions, BlockGenus genus) {
+    private static void loadGenusDescription(NodeList descriptions, BlockGenus genus, String attribName) {
         Node description;        
 		ResourceBundle bundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");	
 		for (int k = 0; k < descriptions.getLength(); k++) {
