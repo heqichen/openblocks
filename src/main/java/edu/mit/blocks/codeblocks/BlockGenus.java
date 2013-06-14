@@ -472,7 +472,7 @@ public class BlockGenus {
 	 *  ldgneto@gmail.com 
 	 * */
     /**
-     * Modified by HE Qichen, remove addition code for rendering block description, please check code in WorkspaceController.java
+     * Modified by HE Qichen, remove additional code for rendering block description, please check code in WorkspaceController.java
      * 
      */
     private static void loadGenusDescription(NodeList descriptions, BlockGenus genus) {

@@ -13,6 +13,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.List;
 
@@ -211,6 +212,46 @@ public class WorkspaceController {
         		String altName = langResourceBundle.getString("bg." + name);
         		if (altName != null) {
         			elm.setAttribute("initlabel", altName);
+        		}
+        		String description = null;
+        		try
+        		{
+        			description = langResourceBundle.getString("tip." + name);
+        		}
+        		catch (MissingResourceException e)
+        		{}
+        		if (description != null)
+        		{
+        			NodeList descList = elm.getElementsByTagName("description");
+        			if (descList.getLength() < 1)
+        			{
+        				//create a description node here
+        				Element textElem = doc.createElement("text");
+        				textElem.setTextContent(description);
+        				
+        				Element descElem = doc.createElement("description");
+        				descElem.appendChild(textElem);
+        				
+        				elm.appendChild(descElem);
+        			}
+        			else
+        			{
+        				Element descElem = (Element)descList.item(0);
+        				NodeList textList = descElem.getElementsByTagName("text");
+        				if (textList.getLength() < 1)
+        				{
+        					//create a text node here
+        					Element textElem = doc.createElement("text");
+        					textElem.setTextContent(description);
+        					descElem.appendChild(textElem);
+        				}
+        				else
+        				{
+        					//render description here
+        					Element textElem = (Element)textList.item(0);
+        					textElem.setTextContent(description);
+        				}
+        			}
         		}
         	}
         	nodes = doc.getElementsByTagName("BlockDrawer");
