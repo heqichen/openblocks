@@ -212,6 +212,18 @@ public class WorkspaceController {
         		if (altName != null) {
         			elm.setAttribute("initlabel", altName);
         		}
+				NodeList descriptions = elm.getElementsByTagName("description");
+				Element description = (Element)descriptions.item(0);
+				if (description != null) {
+					NodeList texts = description.getElementsByTagName("text");
+					Element text = (Element)texts.item(0);
+					if (text != null) {
+						altName = langResourceBundle.getString("bg." + name + ".description");
+						if (altName != null) {
+							text.setTextContent(altName);
+						}
+					}
+				}
         	}
         	nodes = doc.getElementsByTagName("BlockDrawer");
         	for (int i = 0 ; i < nodes.getLength(); i++) {
