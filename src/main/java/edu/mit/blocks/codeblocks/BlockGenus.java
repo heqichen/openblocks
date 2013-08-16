@@ -468,20 +468,19 @@ public class BlockGenus {
     }
 
     /**
-     * Modified to translate the ToolTip
+     * Modified to translate the ToolTip (removed, modified by HE Qichen, see blow)
 	 *  ldgneto@gmail.com 
 	 * */
-    private static void loadGenusDescription(NodeList descriptions, BlockGenus genus, String attribName) {
-        Node description;        
-		ResourceBundle bundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");	
+    /**
+     * Modified by HE Qichen, remove additional code for rendering block description, please check code in WorkspaceController.java
+     * 
+     */
+    private static void loadGenusDescription(NodeList descriptions, BlockGenus genus) {
+		Node description;
 		for (int k = 0; k < descriptions.getLength(); k++) {
-			description = descriptions.item(k);	
-			if (description.getNodeName().equals("text") && !attribName.equals(null)) {
-				try{//Trying to bundle the attribute
-					genus.blockDescription = bundle.getString("tip." + attribName);
-				}catch (MissingResourceException e) {
-					genus.blockDescription = description.getTextContent();
-				}
+			description = descriptions.item(k);
+			if (description.getNodeName().equals("text")) {
+				genus.blockDescription = description.getTextContent();
 			} else if (description.getNodeName().equals("arg-description")) {
 				String argumentDescription = description.getTextContent();
 				if (argumentDescription != null) {
@@ -489,7 +488,7 @@ public class BlockGenus {
 				}
 			}
 		}
-    }
+	}
 
     /**
      * Loads the BlockConnector information of the specified genus
@@ -782,7 +781,6 @@ public class BlockGenus {
         NodeList genusNodes = root.getElementsByTagName("BlockGenus"); //look for genus
         Node genusNode;
         StringTokenizer col;
-        String attribName = "";//Added to get attribute name
         for (int i = 0; i < genusNodes.getLength(); i++) { //find them
             genusNode = genusNodes.item(i);
             if (genusNode.getNodeName().equals("BlockGenus")) {
@@ -790,8 +788,6 @@ public class BlockGenus {
                 BlockGenus newGenus = new BlockGenus(env);
                 //first, parse out the attributes
                 nameMatcher = attrExtractor.matcher(genusNode.getAttributes().getNamedItem("name").toString());
-                //Attribute name to loadGenusDescription method
-                attribName = genusNode.getAttributes().getNamedItem("name").getNodeValue();
                 if (nameMatcher.find()) {
                     newGenus.genusName = nameMatcher.group(1);
                 }
@@ -881,7 +877,7 @@ public class BlockGenus {
                     genusChild = genusChildren.item(j);
                     if (genusChild.getNodeName().equals("description")) {
                         /// LOAD BLOCK GENUS DESCRIPTION ///
-                        loadGenusDescription(genusChild.getChildNodes(), newGenus, attribName);
+                        loadGenusDescription(genusChild.getChildNodes(), newGenus);
                     } else if (genusChild.getNodeName().equals("BlockConnectors")) {
                         /// LOAD BLOCK CONNECTOR INFORMATION ///
                         loadBlockConnectorInformation(workspace, genusChild.getChildNodes(), newGenus);
