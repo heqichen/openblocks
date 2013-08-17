@@ -12,9 +12,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
-
 import javax.swing.ImageIcon;
 
 import org.w3c.dom.Element;
