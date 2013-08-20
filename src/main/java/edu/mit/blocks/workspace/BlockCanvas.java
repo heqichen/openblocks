@@ -62,7 +62,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
     private final Workspace workspace;
     
     private boolean collapsible = false;
-
+    
     //////////////////////////////
     //Constructor/Destructor	//
     //////////////////////////////
@@ -421,7 +421,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
                     p.setPageColor(new Color(40, 40, 40));
                 }
                 */
-            	p.setPageColor(new Color(220, 220, 220));
+            	p.setPageColor(edu.mit.blocks.workspace.Page.backgroundColor); // Main Canvas Color
             } else {
                 p.setPageColor(p.getDefaultPageColor());
             }

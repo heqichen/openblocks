@@ -126,14 +126,11 @@ public class Block implements ISupportMemento {
             after = new BlockConnector(genus.getInitAfter());
         }
 
-
-
         for (final String arg : genus.getInitialArgumentDescriptions()) {
             argumentDescriptions.add(arg.trim());
         }
 
         this.expandGroups = new ArrayList<List<BlockConnector>>(genus.getExpandGroups());
-
 
         //add itself to stubs hashmap
         //however factory blocks will have entries in hashmap...

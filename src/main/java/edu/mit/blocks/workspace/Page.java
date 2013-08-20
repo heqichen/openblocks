@@ -126,6 +126,9 @@ public class Page implements WorkspaceWidget, SearchableContainer, ISupportMemen
     private String pageId = null;
     /** Toggles to show/hide minimize page button. */
     private boolean hideMinimize = false;
+    
+    /** Standard background color of the UI **/
+    public static Color backgroundColor = new Color(160, 160, 160);
     //////////////////////////////
     //Constructor/ Destructor	//
     //////////////////////////////
