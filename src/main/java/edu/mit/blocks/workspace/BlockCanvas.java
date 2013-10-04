@@ -239,7 +239,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
      * @requires none
      * @return page at position or null if non exists at position
      */
-    protected Page getPageAt(int position) {
+    public Page getPageAt(int position) {
         if (hasPageAt(position)) {
             return pages.get(position);
         } else {
