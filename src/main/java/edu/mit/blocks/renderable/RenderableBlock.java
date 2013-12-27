@@ -1598,19 +1598,6 @@ public class RenderableBlock extends JComponent implements SearchableElement,
 		return location;
 	}
 
-	private final static String BLOCK_SUBROUTINE_NAME = "subroutine";	//heqichen
-	private final static String BLOCK_INVOKE_SUBROUTINE_NAME = "subroutine-ref"; //heqichen
-	
-	public void createRefer()
-	{
-		if (this.getGenus().equals(BLOCK_SUBROUTINE_NAME))
-		{
-			Block refBlock = new Block(workspace, BLOCK_INVOKE_SUBROUTINE_NAME, this.blockLabel.getText());
-			RenderableBlock refRb = new RenderableBlock(workspace, parent, refBlock.getBlockID(), false);
-			parent.addBlock(refRb);
-		}
-	}
-	
 	public void cloneMe() {
 		cloneThis(this);
 		
@@ -1618,7 +1605,7 @@ public class RenderableBlock extends JComponent implements SearchableElement,
 				.getParentWidget(), this.getBlockID(),
 				WorkspaceEvent.BLOCK_CLONED, true));
 	}
-	
+
 	private RenderableBlock cloneThis(RenderableBlock rb)
     {
     	Block oriBlock = rb.getBlock();

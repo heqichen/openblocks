@@ -30,7 +30,7 @@ import edu.mit.blocks.renderable.RenderableBlock;
  * The FactoryManager manages all block factories in the workspace.
  * It has three main functions:  to control and display all factories
  * in one simple UI design, to manage the additions of new drawers,
- * and to add blocks to those drawers appropriately.
+ * and to add blocks to throse drawers appropriately.
  * 
  * The FactoryManager manages two factories: the static factory
  * and dynamic factory.  Each factory has a set of drawers.  NO TWO
@@ -38,7 +38,7 @@ import edu.mit.blocks.renderable.RenderableBlock;
  * 
  * ********************FACTORY STRUCTURE***********************
  * 
- * Let's take a look into the structure of a factory.  Factory is
+ * Let's take a look into the stucture of a factory.  Factory is
  * a pallete that sits on the far left side of the workspace.
  * It has a bunch of drawers that slides up and down.  Each
  * drawer contains a bunch of related blocks that can be dragged
@@ -53,10 +53,10 @@ import edu.mit.blocks.renderable.RenderableBlock;
  * *************IMPLEMENTATION DETAIL******************
  * 
  * How the FactoryManager implements this UI is implementation
- * dependent.  Right now, it uses the Navigator-Explorer-Canvas design.
+ * dependant.  Right now, it uses the Navigator-Explorer-Canvas deisgn.
  * Clients of the FactoryManager should know nothing about the
  * internal GUIs used to control the interface.  Internally,
- * a Canvas (rather than an instance of Drawer) is created for every
+ * a Canvas (rahter than an instance of Drawer) is created for every
  * "drawer" that the user wishes to add.  But this is an implementation
  * detail that the user should not be bothered with.  All the user should
  * know is that a "drawer" specified by some String object was created.
@@ -75,9 +75,9 @@ import edu.mit.blocks.renderable.RenderableBlock;
  * 
  * Please do not mix this definition with the CSwing Drawer class.
  * A CSwing Drawer is a low-level component that is used
- * in a CSwing Explorer.  Here, when the documentation refers
- * to drawers, it is NOT referring to the CSwing Drawer.  Rather,
- * when we say "drawer", we are referring to that object that holds blocks.
+ * in a CSwing Exlorer.  Here, when the documentation refers
+ * to drawers, it is NOT refering to the CSwing Drawer.  Rather,
+ * when we say "drawer", we are referign to that object that holds blocks.
  * 
  * *****************NAMING OF DRAWERS*************************
  * Each factory may have only ONE drawer with a particular name.
@@ -612,7 +612,7 @@ public class FactoryManager implements WorkspaceWidget, ComponentListener, Works
      */
     public void addStaticBlock(RenderableBlock block, String drawer) {
         for (FactoryCanvas canvas : this.staticCanvases) {
-            if (canvas.getName().equals(drawer)) {
+        	if (canvas.getName().equals(drawer)) {
                 if (block == null || Block.NULL.equals(block.getBlockID())) {
                     printError("Attempting to add a null instance of block");
                     return;
@@ -809,7 +809,18 @@ public class FactoryManager implements WorkspaceWidget, ComponentListener, Works
     public boolean contains(int x, int y) {
         return this.navigator.getJComponent().contains(x, y);
     }
-
+    
+    private String staticdrawer(BlockStub stub) {
+	    for (FactoryCanvas canvas : this.staticCanvases) {
+	    	for (RenderableBlock bl : canvas.getBlocks()) {
+	    		if (bl.getGenus().equals(stub.getParentGenus())) {
+	    			return canvas.getName();
+	    		}
+	    	}
+	    }
+		return null;
+    }
+    
     public void workspaceEventOccurred(WorkspaceEvent event) {
         //THIS ENTIRE METHOD IS A HACK!
         //PLEASE CHANGE WITH CAUTION
@@ -821,9 +832,9 @@ public class FactoryManager implements WorkspaceWidget, ComponentListener, Works
                 //block may not be null if this is a block added event
                 if (block.hasStubs()) {
                     for (BlockStub stub : block.getFreshStubs()) {
-                        this.addDynamicBlock(
+                        this.addStaticBlock(
                                 new FactoryRenderableBlock(event.getWorkspace(), this, stub.getBlockID()),
-                                page.getPageDrawer());
+                                staticdrawer(stub));	//drawerName);	//"Procedure");//	page.getPageDrawer());	//
                     }
                 }
             }

@@ -31,6 +31,8 @@ import edu.mit.blocks.codeblockutil.CScrollPane.ScrollPolicy;
 import edu.mit.blocks.renderable.RenderableBlock;
 import org.w3c.dom.NodeList;
 
+import edu.mit.blocks.codeblocks.ProcedureOutputManager;
+
 /**
  * A BlockCanvas is a container of Pages and is a scrollable
  * panel.  When a page is added to a BlockCanvas, that
@@ -62,7 +64,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
     private final Workspace workspace;
     
     private boolean collapsible = false;
-    
+
     //////////////////////////////
     //Constructor/Destructor	//
     //////////////////////////////
@@ -239,7 +241,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
      * @requires none
      * @return page at position or null if non exists at position
      */
-    public Page getPageAt(int position) {
+    protected Page getPageAt(int position) {
         if (hasPageAt(position)) {
             return pages.get(position);
         } else {
@@ -414,14 +416,11 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
         for (int i = 0; i < pages.size(); i++) {
             Page p = pages.get(i);
             if (p.getDefaultPageColor() == null) {
-            	/*
                 if (i % 2 == 1) {
                     p.setPageColor(new Color(30, 30, 30));
                 } else {
                     p.setPageColor(new Color(40, 40, 40));
                 }
-                */
-            	p.setPageColor(edu.mit.blocks.workspace.Page.backgroundColor); // Main Canvas Color
             } else {
                 p.setPageColor(p.getDefaultPageColor());
             }
@@ -480,7 +479,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
         //load pages, page drawers, and their blocks from save file
         //PageDrawerManager.loadPagesAndDrawers(root);
         PageDrawerLoadingUtils.loadPagesAndDrawers(workspace, root, workspace.getFactoryManager());
-
+        
         final NodeList pagesRoot = root.getElementsByTagName("Pages");
         if (pagesRoot != null && pagesRoot.getLength() > 0) {
             final Node pagesNode = pagesRoot.item(0);
@@ -500,6 +499,7 @@ public class BlockCanvas implements PageChangeListener, ISupportMemento {
                 PageChangeEventManager.notifyListeners();
             }
         }
+
     }
 
     //////////////////////////////

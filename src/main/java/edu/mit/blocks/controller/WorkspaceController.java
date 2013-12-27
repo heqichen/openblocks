@@ -13,7 +13,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.List;
 
@@ -53,12 +52,17 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.EntityResolver;
 
+import edu.mit.blocks.codeblocks.ProcedureOutputManager;	//*****
+
 import edu.mit.blocks.codeblocks.BlockConnectorShape;
 import edu.mit.blocks.codeblocks.BlockGenus;
 import edu.mit.blocks.codeblocks.BlockLinkChecker;
 import edu.mit.blocks.codeblocks.CommandRule;
 import edu.mit.blocks.codeblocks.Constants;
 import edu.mit.blocks.codeblocks.SocketRule;
+import edu.mit.blocks.codeblocks.ParamRule;
+import edu.mit.blocks.codeblocks.PolyRule;
+import edu.mit.blocks.codeblocks.StackRule;
 import edu.mit.blocks.workspace.SearchBar;
 import edu.mit.blocks.workspace.SearchableContainer;
 import edu.mit.blocks.workspace.Workspace;
@@ -97,6 +101,9 @@ public class WorkspaceController {
     private ResourceBundle langResourceBundle;
 	// List of styles
     private List<String[]> styleList;
+    
+    private static ProcedureOutputManager pom;	//*****
+    
 
     /**
      * Constructs a WorkspaceController instance that manages the
@@ -105,6 +112,7 @@ public class WorkspaceController {
      */
     public WorkspaceController() {
         this.workspace = new Workspace();
+        pom = new ProcedureOutputManager(workspace);	//*****
     }
     
     public void setLangDefDtd(InputStream is) {
@@ -213,25 +221,6 @@ public class WorkspaceController {
         		if (altName != null) {
         			elm.setAttribute("initlabel", altName);
         		}
-				NodeList descriptions = elm.getElementsByTagName("description");
-				Element description = (Element)descriptions.item(0);
-				if (description != null) {
-					NodeList texts = description.getElementsByTagName("text");
-					Element text = (Element)texts.item(0);
-					if (text != null) {
-						altName = langResourceBundle.getString("bg." + name + ".description");
-						if (altName != null) {
-							text.setTextContent(altName);
-						}
-					}
-				}
-				
-				NodeList arg_descs = elm.getElementsByTagName("arg-description");
-				for (int j = 0 ; j < arg_descs.getLength(); j++) {
-					Element arg_desc = (Element)arg_descs.item(j);
-					String arg_name = arg_desc.getAttribute("name");
-					// System.out.println("bg." + name + ".arg_desc." + arg_name);
-	        	}
         	}
         	nodes = doc.getElementsByTagName("BlockDrawer");
         	for (int i = 0 ; i < nodes.getLength(); i++) {
@@ -272,6 +261,9 @@ public class WorkspaceController {
         //load rules
         BlockLinkChecker.addRule(workspace, new CommandRule(workspace));
         BlockLinkChecker.addRule(workspace, new SocketRule());
+        BlockLinkChecker.addRule(workspace, new PolyRule(workspace));
+        BlockLinkChecker.addRule(workspace, new StackRule(workspace));
+        BlockLinkChecker.addRule(workspace, new ParamRule());
 
         //set the dirty flag for the language definition file
         //to false now that the lang file has been loaded
@@ -348,9 +340,9 @@ public class WorkspaceController {
             }
 
             document.appendChild(documentElement);
-            if (validate) {
-                validate(document);
-            }
+            //if (validate) {
+            //    validate(document);
+            //}
 
             return document;
         }
@@ -396,6 +388,7 @@ public class WorkspaceController {
         }
         workspace.loadWorkspaceFrom(null, langDefRoot);
         workspaceLoaded = true;
+        
     }
 
     /**
@@ -482,6 +475,7 @@ public class WorkspaceController {
             }
             workspace.loadWorkspaceFrom(projectRoot, langRoot);
             workspaceLoaded = true;
+
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         } catch (SAXException e) {
@@ -500,6 +494,9 @@ public class WorkspaceController {
         //clear all drawers and their content
         //clear all block and renderable block instances
         workspace.reset();
+        //clear procedure output information
+        ProcedureOutputManager.reset();	//*****
+
     }
 
     /**

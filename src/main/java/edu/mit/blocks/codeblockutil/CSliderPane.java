@@ -350,7 +350,7 @@ public class CSliderPane extends JPanel implements ComponentListener {
         public CNumberTextField(String text) {
             super(text);
             this.setOpaque(false);
-            this.setFont(new Font("Dialog", Font.PLAIN, 12));
+            this.setFont(new Font("Monospaced", Font.PLAIN, 9));
             this.setForeground(Color.white);
             this.setBorder(null);
             this.addFocusListener(this);
