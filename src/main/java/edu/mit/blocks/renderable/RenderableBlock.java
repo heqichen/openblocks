@@ -1624,6 +1624,8 @@ public class RenderableBlock extends JComponent implements SearchableElement,
     	Block oriBlock = rb.getBlock();
     	oriBlock.getSockets();
     	
+    	Point oriLocation =rb.getLocation();
+    	
     	Block newBlock = new Block(workspace, rb.getGenus(), rb.blockLabel.getText());
     	RenderableBlock newRb = new RenderableBlock(workspace, parent, newBlock.getBlockID(), false);
     	
@@ -1677,6 +1679,8 @@ public class RenderableBlock extends JComponent implements SearchableElement,
     		}
     	}
     	
+    	newRb.setLocation(oriLocation.x+(int)(NEARBY_RADIUS),oriLocation.y+(int)(NEARBY_RADIUS));
+    	newRb.moveConnectedBlocks();
     	parent.addBlock(newRb);
     	newRb.linkedDefArgsBefore = true;
     	return newRb;
