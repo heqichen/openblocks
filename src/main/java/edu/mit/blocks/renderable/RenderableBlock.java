@@ -1807,6 +1807,10 @@ public class RenderableBlock extends JComponent implements SearchableElement,
 			renderable.comment.setLocation(renderable.comment.getLocation());
 			renderable.comment.getArrow().updateArrow();
 		}
+	// When dragging, Child blocks can become mis-aligned to their Parent Block which is very annoying
+	// I can't stop this happening, nor work out why it happens.
+	// This is just a quick 'fix' to stop things looking too bad
+	renderable.moveConnectedBlocks();
 	}
 
 	private void drag(RenderableBlock renderable, int dx, int dy,
