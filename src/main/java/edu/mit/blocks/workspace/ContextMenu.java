@@ -22,30 +22,16 @@ public class ContextMenu extends PopupMenu implements ActionListener {
     //menu items for renderableblock context menu
     private static ContextMenu rndBlockMenu = new ContextMenu();
     private static ContextMenu addCommentMenu = new ContextMenu();
-    private static ContextMenu subroutineRemoveCommentMenu = new ContextMenu();
-    private static ContextMenu removeCommentMenu = new ContextMenu();
-    private static ContextMenu subroutineAddCommentMenu = new ContextMenu();
-    
+    private static MenuItem addCommentItem;
     private final static String ADD_COMMENT_BLOCK = "ADDCOMMENT";
     private static boolean addCommentMenuInit = false;
-    private static boolean subroutineAddCommentMenuInit = false;
+    private static ContextMenu removeCommentMenu = new ContextMenu();
+    private static MenuItem removeCommentItem;
     private final static String REMOVE_COMMENT_BLOCK = "REMOVECOMMENT";
     private static boolean removeCommentMenuInit = false;
-    private static boolean subroutineRemoveCommentMenuInit = false;
-    
     private final static String CLONE_BLOCK = "CLONE";	//heqichen
-    private final static String CREATE_REF = "CREATE-REF";	//heqichen
-    private static MenuItem addCommentItem1 = null;
-    private static MenuItem addCommentItem2 = null;
-    private static MenuItem removeCommentItem1 = null;
-    private static MenuItem removeCommentItem2 = null;
     private static MenuItem cloneItem1 = null;	//heqichen
     private static MenuItem cloneItem2 = null;	//heqichen
-    private static MenuItem cloneItem3 = null;	//heqichen
-    private static MenuItem cloneItem4 = null;	//heqichen
-    private static MenuItem createRefItem1 = null;	//heqichen
-    private static MenuItem createRefItem2 = null;	//heqichen
-    private final static String BLOCK_SUBROUTINE_NAME = "subroutine";	//heqichen
     //context menu for canvas plus
     //menu items for canvas context menu
     private static ContextMenu canvasMenu = new ContextMenu();
@@ -65,10 +51,10 @@ public class ContextMenu extends PopupMenu implements ActionListener {
     private static void initAddCommentMenu() {
     	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");
     	
-    	addCommentItem1 = new MenuItem(uiMessageBundle.getString("ardublock.ui.add_comment"));
-        addCommentItem1.setActionCommand(ADD_COMMENT_BLOCK);
-        addCommentItem1.addActionListener(rndBlockMenu);
-        addCommentMenu.add(addCommentItem1);
+    	addCommentItem = new MenuItem(uiMessageBundle.getString("ardublock.ui.add_comment"));
+        addCommentItem.setActionCommand(ADD_COMMENT_BLOCK);
+        addCommentItem.addActionListener(rndBlockMenu);
+        addCommentMenu.add(addCommentItem);
         
     	cloneItem1 = new MenuItem(uiMessageBundle.getString("ardublock.ui.clone"));
     	cloneItem1.setActionCommand(CLONE_BLOCK);
@@ -78,31 +64,6 @@ public class ContextMenu extends PopupMenu implements ActionListener {
         addCommentMenuInit = true;
         
     }
-    
-    /**
-     * Initializes the context menu for subroutine adding Comments.
-     */
-    private static void initSubroutineAddCommentMenu() {
-    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");
-    	
-    	addCommentItem2 = new MenuItem(uiMessageBundle.getString("ardublock.ui.add_comment"));
-        addCommentItem2.setActionCommand(ADD_COMMENT_BLOCK);
-        addCommentItem2.addActionListener(rndBlockMenu);
-        subroutineAddCommentMenu.add(addCommentItem2);
-        
-    	cloneItem2 = new MenuItem(uiMessageBundle.getString("ardublock.ui.clone"));
-    	cloneItem2.setActionCommand(CLONE_BLOCK);
-    	cloneItem2.addActionListener(rndBlockMenu);
-    	subroutineAddCommentMenu.add(cloneItem2);
-    	
-    	createRefItem1 = new MenuItem(uiMessageBundle.getString("ardublock.ui.create_refer"));
-    	createRefItem1.setActionCommand(CREATE_REF);
-    	createRefItem1.addActionListener(rndBlockMenu);
-    	subroutineAddCommentMenu.add(createRefItem1);
-        
-        subroutineAddCommentMenuInit = true;
-        
-    }
 
     /**
      * Initializes the context menu for deleting Comments.
@@ -110,47 +71,20 @@ public class ContextMenu extends PopupMenu implements ActionListener {
     private static void initRemoveCommentMenu() {
     	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");
     	
-        removeCommentItem1 = new MenuItem(uiMessageBundle.getString("ardublock.ui.delete_comment"));
-        removeCommentItem1.setActionCommand(REMOVE_COMMENT_BLOCK);
-        removeCommentItem1.addActionListener(rndBlockMenu);
+        removeCommentItem = new MenuItem(uiMessageBundle.getString("ardublock.ui.delete_comment"));
+        removeCommentItem.setActionCommand(REMOVE_COMMENT_BLOCK);
+        removeCommentItem.addActionListener(rndBlockMenu);
 
-        removeCommentMenu.add(removeCommentItem1);
+        removeCommentMenu.add(removeCommentItem);
         //rndBlockMenu.add(runBlockItem);
         
     	
-    	cloneItem3 = new MenuItem(uiMessageBundle.getString("ardublock.ui.clone"));
-    	cloneItem3.setActionCommand(CLONE_BLOCK);
-    	cloneItem3.addActionListener(rndBlockMenu);
-        removeCommentMenu.add(cloneItem3);
+    	cloneItem2 = new MenuItem(uiMessageBundle.getString("ardublock.ui.clone"));
+    	cloneItem2.setActionCommand(CLONE_BLOCK);
+    	cloneItem2.addActionListener(rndBlockMenu);
+        removeCommentMenu.add(cloneItem2);
         
         removeCommentMenuInit = true;
-    }
-    
-    /**
-     * Initializes the context menu for subroutine deleting Comments.
-     */
-    private static void initSubroutineRemoveCommentMenu() {
-    	ResourceBundle uiMessageBundle = ResourceBundle.getBundle("com/ardublock/block/ardublock");
-    	
-        removeCommentItem2 = new MenuItem(uiMessageBundle.getString("ardublock.ui.delete_comment"));
-        removeCommentItem2.setActionCommand(REMOVE_COMMENT_BLOCK);
-        removeCommentItem2.addActionListener(rndBlockMenu);
-
-        subroutineRemoveCommentMenu.add(removeCommentItem2);
-        //rndBlockMenu.add(runBlockItem);
-        
-    	
-    	cloneItem4 = new MenuItem(uiMessageBundle.getString("ardublock.ui.clone"));
-    	cloneItem4.setActionCommand(CLONE_BLOCK);
-    	cloneItem4.addActionListener(rndBlockMenu);
-    	subroutineRemoveCommentMenu.add(cloneItem4);
-        
-    	createRefItem2 = new MenuItem(uiMessageBundle.getString("ardublock.ui.create_refer"));
-    	createRefItem2.setActionCommand(CREATE_REF);
-    	createRefItem2.addActionListener(rndBlockMenu);
-    	subroutineRemoveCommentMenu.add(createRefItem2);
-    	
-    	subroutineRemoveCommentMenuInit = true;
     }
 
     /**
@@ -176,54 +110,20 @@ public class ContextMenu extends PopupMenu implements ActionListener {
      * @return the right click context menu for the specified JComponent.  If there is 
      * none, returns null.
      */
-    /**
-     * 
-     * modificated: HE Qichen, 2013-06-02
-     * 
-     */
     public static PopupMenu getContextMenuFor(Object o) {
         if (o instanceof RenderableBlock) {
-            if (((RenderableBlock) o).hasComment())
-            {
-            	if (((RenderableBlock)o).getGenus().equals(BLOCK_SUBROUTINE_NAME))
-            	{
-            		if (!subroutineRemoveCommentMenuInit)
-            		{
-            			initSubroutineRemoveCommentMenu();
-            		}
-            		activeComponent = o;
-            		return subroutineRemoveCommentMenu;
-            	}
-            	else
-            	{
-	                if (!removeCommentMenuInit)
-	                {
-	                    initRemoveCommentMenu();
-	                }
-	                activeComponent = o;
-	                return removeCommentMenu;
-            	}
-            }
-            else
-            {
-            	if (((RenderableBlock)o).getGenus().equals(BLOCK_SUBROUTINE_NAME))
-            	{
-            		if(!subroutineAddCommentMenuInit)
-            		{
-            			initSubroutineAddCommentMenu();
-            		}
-            		activeComponent = o;
-            		return subroutineAddCommentMenu;
-            	}
-            	else
-            	{
-	                if (!addCommentMenuInit)
-	                {
-	                    initAddCommentMenu();
-	                }
-	                activeComponent = o;
-	                return addCommentMenu;
-            	}
+            if (((RenderableBlock) o).hasComment()) {
+                if (!removeCommentMenuInit) {
+                    initRemoveCommentMenu();
+                }
+                activeComponent = o;
+                return removeCommentMenu;
+            } else {
+                if (!addCommentMenuInit) {
+                    initAddCommentMenu();
+                }
+                activeComponent = o;
+                return addCommentMenu;
             }
         } else if (o instanceof BlockCanvas) {
             if (!canvasMenuInit) {
@@ -256,11 +156,6 @@ public class ContextMenu extends PopupMenu implements ActionListener {
             if (activeComponent != null && activeComponent instanceof RenderableBlock) {
                 ((RenderableBlock) activeComponent).cloneMe();
             }
-        } else if (a.getActionCommand() == CREATE_REF){
-        	if (activeComponent != null && activeComponent instanceof RenderableBlock){
-        		((RenderableBlock) activeComponent).createRefer();
-        	}
         }
-        	
     }
 }

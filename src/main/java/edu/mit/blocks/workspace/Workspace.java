@@ -39,6 +39,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.mit.blocks.codeblocks.Block;
+import edu.mit.blocks.codeblocks.ProcedureOutputManager;
 import edu.mit.blocks.codeblockutil.Explorer;
 import edu.mit.blocks.codeblockutil.ExplorerEvent;
 import edu.mit.blocks.codeblockutil.ExplorerListener;
@@ -134,7 +135,7 @@ public class Workspace extends JLayeredPane implements ISupportMemento, RBParent
         super();
         setLayout(null);
         setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(1000, 800));
+        setPreferredSize(new Dimension(800, 600));
 
         this.factory = new FactoryManager(this);
         this.addWorkspaceListener(this.factory);
@@ -154,7 +155,8 @@ public class Workspace extends JLayeredPane implements ISupportMemento, RBParent
             }
         });
 
-		blockCanvasLayer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, factory.getJComponent(), blockCanvas.getJComponent());
+        blockCanvasLayer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
+                factory.getJComponent(), blockCanvas.getJComponent());
         blockCanvasLayer.setOneTouchExpandable(true);
         blockCanvasLayer.setDividerSize(6);
         add(blockCanvasLayer, BLOCK_LAYER);
@@ -834,12 +836,16 @@ public class Workspace extends JLayeredPane implements ISupportMemento, RBParent
     public void loadWorkspaceFrom(Element newRoot, Element originalLangRoot) {
     	setMaxBlockId(newRoot, originalLangRoot);
     	
+        //reset procedure output information POM finishload
+        ProcedureOutputManager.finishLoad();
+
         if (newRoot != null) {
+            PageDrawerLoadingUtils.loadBlockDrawerSets(this, originalLangRoot, factory); //
             //load pages, page drawers, and their blocks from save file
             blockCanvas.loadSaveString(newRoot);
             //load the block drawers specified in the file (may contain
             //custom drawers) and/or the lang def file if the contents specify
-            PageDrawerLoadingUtils.loadBlockDrawerSets(this, originalLangRoot, factory);
+//            PageDrawerLoadingUtils.loadBlockDrawerSets(this, originalLangRoot, factory);
             PageDrawerLoadingUtils.loadBlockDrawerSets(this, newRoot, factory);
             loadWorkspaceSettings(newRoot);
         } else {

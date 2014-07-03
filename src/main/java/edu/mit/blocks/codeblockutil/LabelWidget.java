@@ -619,12 +619,11 @@ public abstract class LabelWidget extends JComponent {
             //Implecations: background not automatically drawn
             //super.paint(g);
 
-            // TODO Shadow codes for Block
             //draw shadows
             for (int i = 0; i < shadowPositionArray.length; i++) {
                 int dx = shadowPositionArray[i][0];
                 int dy = shadowPositionArray[i][1];
-                g2.setColor(new Color(0.5f, 0.5f, 0.5f, shadowColorArray[i]));
+                g2.setColor(new Color(0, 0, 0, shadowColorArray[i]));
                 g2.drawString(this.getText(), (int) ((4 + dx) * offsetSize), this.getHeight() + (int) ((dy - 6) * offsetSize));
             }
 

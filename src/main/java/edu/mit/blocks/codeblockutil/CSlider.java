@@ -379,7 +379,7 @@ public class CSlider extends JPanel implements MouseListener, MouseMotionListene
         // depending on what the start mark was set as when initialized
         if (this.startMark) {
             g2.setColor(Color.white);
-            Font font = new Font("Monospaced", Font.PLAIN, 8);
+            Font font = new Font("Dialog", Font.PLAIN, 8);
             FontMetrics metrics = getFontMetrics(font);
             // gets the width of the text so that the words can be centered later on
             int textWidth = metrics.stringWidth(startMarkLabel);

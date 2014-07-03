@@ -98,7 +98,7 @@ public class Page implements WorkspaceWidget, SearchableContainer, ISupportMemen
     /** The default abstract width */
     private static final int DEFAULT_ABSTRACT_WIDTH = 700;
     /** The default abstract height */
-    public static final int DEFAULT_ABSTRACT_HEIGHT = 8000;
+    public static final int DEFAULT_ABSTRACT_HEIGHT = 800;
     /** An empty string */
     private static final String emptyString = "";
     /** this.zoomLevel: zoom level state */
@@ -126,9 +126,6 @@ public class Page implements WorkspaceWidget, SearchableContainer, ISupportMemen
     private String pageId = null;
     /** Toggles to show/hide minimize page button. */
     private boolean hideMinimize = false;
-    
-    /** Standard background color of the UI **/
-    public static Color backgroundColor = new Color(160, 160, 160);
     //////////////////////////////
     //Constructor/ Destructor	//
     //////////////////////////////
@@ -987,7 +984,7 @@ public class Page implements WorkspaceWidget, SearchableContainer, ISupportMemen
                 for (int i = 0; i < shadowPositionArray.length; i++) {
                     int dx = shadowPositionArray[i][0];
                     int dy = shadowPositionArray[i][1];
-                    g2.setColor(new Color(0.5f, 0.5f, 0.5f, shadowColorArray[i]));
+                    g2.setColor(new Color(0, 0, 0, shadowColorArray[i]));
                     g2.drawString(c, x + (int) ((dx) * offsetSize), y + (int) ((dy) * offsetSize));
                 }
                 g2.setColor(col);
