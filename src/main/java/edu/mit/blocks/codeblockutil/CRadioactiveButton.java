@@ -105,7 +105,7 @@ public class CRadioactiveButton extends CButton {
             for (int i = 0; i < shadowPositionArray.length; i++) {
                 int dx = shadowPositionArray[i][0];
                 int dy = shadowPositionArray[i][1];
-                g2.setColor(new Color(0, 0, 0, shadowColorArray[i]));
+                g2.setColor(new Color(0.5f, 0.5f, 0.5f, shadowColorArray[i]));
                 g2.drawString(text, x + (int) ((dx) * offsetSize), y + (int) ((dy) * offsetSize));
             }
             g2.setColor(Color.white);
