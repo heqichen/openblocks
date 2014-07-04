@@ -74,10 +74,10 @@ public class TabbedExplorer extends JPanel implements Explorer, MouseListener, A
         this.canvasPane = new JPanel(new BorderLayout());
         canvasPane.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, CGraphite.blue));
 
-        this.setBackground(Color.black);
+        this.setBackground(Color.GRAY);
         this.timer = new Timer(300, this);
         menu = new JPopupMenu();
-        wheeler = new CWheeler(new ArrayList<JComponent>(), false, Color.black);
+        wheeler = new CWheeler(new ArrayList<JComponent>(), false, Color.GRAY);
         wheeler.setPreferredSize(new Dimension(wheeler.getPreferredSize().width, BUTTON_HEIGHT));
         
         left = new CTabButton("<<");

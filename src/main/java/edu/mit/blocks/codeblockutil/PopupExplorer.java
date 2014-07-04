@@ -50,7 +50,7 @@ public class PopupExplorer extends JLayeredPane implements Explorer, ComponentLi
         this.components = new ArrayList<Canvas>();
         this.setLayout(null);
         this.setOpaque(true);
-        this.setBackground(Color.black);
+        this.setBackground(Color.GRAY);
 
         this.viewport = new JPanel(new BorderLayout());
         scroll = new CHoverScrollPane(

@@ -44,7 +44,7 @@ public class WindowExplorer extends JPanel implements Explorer {
         this.canvasPane = new JPanel(new BorderLayout());
         this.buttonPane = new JPanel();
         buttonPane.setBorder(BorderFactory.createMatteBorder(3, 0, 0, 0, new Color(0, 150, 240)));
-        buttonPane.setBackground(Color.black);
+        buttonPane.setBackground(Color.GRAY);
         this.add(canvasPane, BorderLayout.CENTER);
         buttonPane.setLayout(new GridLayout(0, 2, 10, 5));
         this.add(buttonPane, BorderLayout.SOUTH);

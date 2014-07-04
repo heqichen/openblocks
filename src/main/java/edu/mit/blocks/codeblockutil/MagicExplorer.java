@@ -49,17 +49,17 @@ public class MagicExplorer extends JLayeredPane implements Explorer, ComponentLi
         this.canvases = new ArrayList<JComponent>();
         this.setLayout(null);
         this.setOpaque(true);
-        this.setBackground(Color.black);
+        this.setBackground(Color.GRAY);
         this.timer = new EnlargerTimer();
 
         buttonPane = new JPanel();
-        buttonPane.setBackground(Color.black);
+        buttonPane.setBackground(Color.GRAY);
         buttonPane.setLayout(new GridLayout(0, 1));
         add(buttonPane, JLayeredPane.PALETTE_LAYER);
         setLayer(buttonPane, JLayeredPane.PALETTE_LAYER, 0);
 
         this.canvasPane = new JPanel(new BorderLayout());
-        canvasPane.setBackground(Color.black);
+        canvasPane.setBackground(Color.GRAY);
         add(canvasPane, JLayeredPane.PALETTE_LAYER);
         setLayer(canvasPane, JLayeredPane.PALETTE_LAYER, 0);
 

@@ -98,7 +98,7 @@ final public class Navigator {
         explorers = new ArrayList<Explorer>();
         view = new JPanel();
         position = 0;
-        view.setBackground(Color.darkGray);
+        view.setBackground(Color.GRAY);
         view.setLayout(null);
         this.scroll = new JScrollPane(view,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,

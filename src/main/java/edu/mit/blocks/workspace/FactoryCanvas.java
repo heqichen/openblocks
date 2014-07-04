@@ -39,7 +39,7 @@ class FactoryCanvas extends JPanel implements Canvas, SearchableContainer, RBPar
      */
     FactoryCanvas(String name, Color color) {
         super();
-        this.setBackground(CGraphite.gray);
+        this.setBackground(Color.green);
         this.setName(name);
         this.setColor(color);
         this.setLayout(null);

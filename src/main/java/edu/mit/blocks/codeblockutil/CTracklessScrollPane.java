@@ -362,7 +362,7 @@ class VerticalBar extends JPanel implements MouseListener, MouseMotionListener, 
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         this.pressLocation = 0;
-        this.setBackground(Color.black);
+        this.setBackground(Color.GRAY);
         this.setPreferredSize(new Dimension(barwidth, 0));
         this.setBorder(null);
         this.addMouseMotionListener(this);
