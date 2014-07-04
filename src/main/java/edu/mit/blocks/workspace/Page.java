@@ -98,7 +98,7 @@ public class Page implements WorkspaceWidget, SearchableContainer, ISupportMemen
     /** The default abstract width */
     private static final int DEFAULT_ABSTRACT_WIDTH = 700;
     /** The default abstract height */
-    public static final int DEFAULT_ABSTRACT_HEIGHT = 800;
+    public static final int DEFAULT_ABSTRACT_HEIGHT = 3000;
     /** An empty string */
     private static final String emptyString = "";
     /** this.zoomLevel: zoom level state */
