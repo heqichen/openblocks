@@ -217,6 +217,7 @@ public class WorkspaceController {
         	for (int i = 0 ; i < nodes.getLength(); i++) {
         		Element elm = (Element)nodes.item(i);
         		String name = elm.getAttribute("name");
+        		System.out.println("Translating BlockGenu:" + name);
         		String altName = langResourceBundle.getString("bg." + name);
         		if (altName != null) {
         			elm.setAttribute("initlabel", altName);
@@ -227,9 +228,14 @@ public class WorkspaceController {
 					NodeList texts = description.getElementsByTagName("text");
 					Element text = (Element)texts.item(0);
 					if (text != null) {
-						altName = langResourceBundle.getString("bg." + name + ".description");
-						if (altName != null) {
-							text.setTextContent(altName);
+						String pname = "bg." + name + ".description";
+						try {
+							altName = langResourceBundle.getString(pname);
+							if (altName != null) {
+								text.setTextContent(altName);
+							}
+						} catch (java.util.MissingResourceException mre) {
+							System.err.println("ardublock.xml: missing " + pname);
 						}
 					}
 				}
