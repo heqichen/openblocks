@@ -448,6 +448,32 @@ public class WorkspaceController {
             throw new RuntimeException(e);
         }
     }
+    
+    public void loadProjectFromInputStream(final InputStream is) throws IOException
+    {
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        final DocumentBuilder builder;
+        final Document doc;
+        try {
+            builder = factory.newDocumentBuilder();
+            doc = builder.parse(is);
+
+            // XXX here, we could be strict and only allow valid documents...
+            // validate(doc);
+            final Element projectRoot = doc.getDocumentElement();
+            //load the canvas (or pages and page blocks if any) blocks from the save file
+            //also load drawers, or any custom drawers from file.  if no custom drawers
+            //are present in root, then the default set of drawers is loaded from
+            //langDefRoot
+            workspace.loadWorkspaceFrom(projectRoot, langDefRoot);
+            workspaceLoaded = true;
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        } catch (SAXException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Loads the programming project from the specified element. This method
